@@ -237,6 +237,62 @@ This model should remain extensible and should not be required for Version 1.
 
 ### Architecture Philosophy
 
+The application should be centered around a Core Knowledge Engine.
+
+The Core Knowledge Engine is responsible for:
+
+* storing knowledge
+* indexing knowledge
+* maintaining relationships
+* semantic retrieval
+* metadata
+* provenance
+* versioning
+
+Everything else should be built around this engine.
+
+The application should use an event-driven modular architecture.
+
+Example:
+```
+Document Uploaded
+
+↓
+
+Document Parser
+
+↓
+
+Knowledge Extraction
+
+↓
+
+Summarization
+
+↓
+
+Entity Extraction
+
+↓
+
+Relationship Builder
+
+↓
+
+Embedding Generator
+
+↓
+
+Duplicate Detection
+
+↓
+
+Knowledge Graph
+
+↓
+
+Search Index
+```
 ---
 
 ### Long-Term Product Direction
