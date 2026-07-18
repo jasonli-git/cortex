@@ -1,5 +1,4 @@
 # AI PKS Specifications
-
 ## Product Specification v1.0
 
 ### Vision
