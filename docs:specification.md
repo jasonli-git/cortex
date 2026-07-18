@@ -191,9 +191,48 @@ Knowledge should never require duplication.
 
 ### Philosophy of RAG
 
+Retrieval-Augmented Generation exists to provide personal context rather than replace the language model’s general knowledge.
+
+The purpose of RAG is not to make the AI smarter.
+
+Its purpose is to allow the AI to reason using the user’s accumulated knowledge.
+
+When answering questions, the system should prioritize:
+
+1. user knowledge
+2. general model knowledge
+3. external information (future)
+
+The system should make these distinctions explicit.
+
+The application should avoid functioning as merely another “chat with your documents” interface.
+
+Instead, documents should become raw material for building a persistent knowledge layer.
+
+The primary value proposition is knowledge accumulation rather than document retrieval.
+
 ---
 
 ### Learning Philosophy
+
+The application should avoid claiming to know what a user understands.
+
+Instead, it should estimate evidence of learning.
+
+Evidence may include:
+
+* resources read
+* notes written
+* questions asked
+* concepts revisited
+* conversations
+* highlights
+* projects completed
+* future quizzes or exercises
+
+Understanding should therefore be represented as confidence rather than certainty.
+
+This model should remain extensible and should not be required for Version 1.
 
 ---
 
@@ -203,9 +242,34 @@ Knowledge should never require duplication.
 
 ### Long-Term Product Direction
 
+The PKS should not attempt to become every AI application.
+
+Instead, it should become the foundational knowledge platform upon which future specialized assistants can operate.
+
+Examples include:
+
+* AI Research Assistant
+* AI Coding Assistant
+* Agentic Job Search Assistant
+* Learning Coach
+* Decision Support Assistant
+
+Each assistant should reuse the same knowledge base rather than maintaining separate memories.
+
 ---
 
 ### Non-Goals (Version 1)
+
+Version 1 should not attempt to:
+
+* perfectly model human understanding
+* replace frontier language models
+* automatically complete complex projects
+* become an autonomous agent
+* support every file type
+* solve every knowledge-management workflow
+
+Instead, Version 1 should focus on building a robust, modular knowledge foundation that can be expanded over time.
 
 ---
 
