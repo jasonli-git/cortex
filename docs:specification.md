@@ -295,6 +295,32 @@ Search Index
 ```
 ---
 
+The application should distinguish between heavy processing and lightweight interaction.
+
+Heavy AI models should perform:
+
+* ingestion
+* structure extraction
+* relationship discovery
+* quality verification
+
+Fast models should perform:
+
+* conversation
+* summarization
+* search assistance
+* navigation
+
+This separation improves both cost and responsiveness.
+
+---
+
+Future AI assistants should consume knowledge from the Core Knowledge Engine rather than maintaining separate memory systems.
+
+The PKS should become the shared intelligence layer for future applications.
+
+---
+
 ### Long-Term Product Direction
 
 The PKS should not attempt to become every AI application.
