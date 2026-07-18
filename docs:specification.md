@@ -118,9 +118,74 @@ Examples include:
 * future assistants
 
 Modules should communicate through stable interfaces and should be replaceable without affecting the rest of the application.
+
 ---
 
 ### User Experience
+
+The application should feel less like “chat with my PDFs” and more like a personal knowledge workspace.
+
+The primary interactions should be:
+
+* upload resources
+* write notes
+* search knowledge
+* chat with accumulated knowledge
+* browse relationships
+* review learning
+* manage workspaces
+
+Users should never feel required to manually organize every piece of information.
+
+Instead, the application should continuously perform background processing to maintain an organized knowledge base.
+
+For example, uploading an American History textbook should not simply create embeddings.
+
+Instead, the system should automatically recognize:
+
+* chapters
+* sections
+* historical periods
+* important people
+* major events
+* timelines
+* related concepts
+
+These should become structured knowledge objects linked throughout the rest of the knowledge base.
+
+___
+
+The application should support both active learning and passive reference.
+
+Examples:
+
+“I am currently studying American History.”
+
+vs.
+
+“I own this textbook and want it available for future reference.”
+
+These represent different relationships with the same resource and should influence how the system surfaces information.
+
+---
+
+The application should support workspaces.
+
+A workspace represents a context in which knowledge is used.
+
+Examples include:
+
+* learning American History
+* building an AI application
+* career development
+* investing
+* photography
+
+A workspace should not own knowledge.
+
+Instead, it references relevant knowledge objects while allowing the same knowledge to appear across multiple workspaces.
+
+Knowledge should never require duplication.
 
 ---
 
