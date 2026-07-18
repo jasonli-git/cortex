@@ -274,3 +274,41 @@ Instead, Version 1 should focus on building a robust, modular knowledge foundati
 ---
 
 ### Changes from Previous Draft
+
+#### 1. Shifted from “Project-centric” to “Knowledge-centric”
+
+**Previous idea:**
+Projects were described as the primary organizational unit.
+
+**Current version:**
+Knowledge is the primary object. Workspaces (projects, learning goals, areas of interest) are contexts that reference knowledge rather than owning it.
+
+**Reason:** This avoids duplicating concepts across multiple endeavors. A concept like “vector embeddings” should exist once and be reusable in many workspaces.
+
+#### 2. Introduced the distinction between Resources and Knowledge
+
+The previous draft blurred uploaded files and the knowledge extracted from them.
+
+The new version explicitly states that resources are inputs and evidence, while knowledge is the structured representation created from those inputs.
+
+**Reason:** This better reflects the core purpose of the PKS and keeps the architecture flexible.
+
+#### 3. Added a dedicated Learning Philosophy
+
+Instead of claiming the PKS knows what a user understands, the specification now frames learning as evidence-based confidence.
+
+**Reason:** This is both more realistic and more technically achievable. It avoids overpromising while leaving room for future educational features.
+
+#### 4. Strengthened the role of the Core Knowledge Engine
+
+The architecture now clearly identifies a single foundational component that stores, indexes, and relates knowledge, with all other capabilities acting as modular services around it.
+
+**Reason:** This reinforces the long-term goal of making the PKS the shared knowledge layer for future AI applications.
+
+#### 5. Added explicit Version 1 non-goals
+
+The previous draft focused almost entirely on aspirations.
+
+The new version defines what the first release should not attempt.
+
+**Reason:** Clear boundaries reduce scope creep and make the project more likely to reach a polished, usable state.
