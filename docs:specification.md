@@ -18,7 +18,7 @@ The application should be designed as a platform rather than a single-purpose ap
 
 ### Core Principles
 
-####1. Knowledge is the primary object.####
+#### 1. Knowledge is the primary object.####
 
 The system is fundamentally about knowledge—not documents.
 
@@ -26,7 +26,7 @@ PDFs, EPUBs, notes, conversations, videos, web pages, code repositories, and fut
 
 Knowledge should exist independently of the source from which it originated.
 
-####2. Resources are evidence, not the destination.####
+#### 2. Resources are evidence, not the destination.####
 
 Documents should never remain isolated files.
 
@@ -45,7 +45,7 @@ Examples include:
 
 The original resource should always remain available for reference.
 
-####3. Knowledge should accumulate permanently.####
+#### 3. Knowledge should accumulate permanently.####
 
 The application should continuously grow smarter about the user’s knowledge over time.
 
@@ -53,7 +53,7 @@ Every interaction—including uploads, notes, conversations, highlights, decisio
 
 The application should minimize repeated work by remembering previous context.
 
-####4. Everything should be connected.####
+#### 4. Everything should be connected.####
 
 Knowledge should exist as an interconnected network rather than isolated folders.
 
@@ -71,7 +71,7 @@ Concepts should automatically relate to:
 
 Relationships should be continuously improved as additional information is added.
 
-####5. The system should reduce organization effort.####
+#### 5. The system should reduce organization effort.####
 
 Manual organization should be optional.
 
@@ -86,7 +86,7 @@ The application should automatically:
 
 Users should organize only when they want additional control.
 
-####6. AI should be transparent.####
+#### 6. AI should be transparent.####
 
 Every AI-generated response should clearly distinguish between:
 
@@ -96,13 +96,13 @@ Every AI-generated response should clearly distinguish between:
 
 Users should always understand where information originated.
 
-####7. Expensive reasoning should happen once.####
-C
-omplex AI processing should occur primarily during ingestion.
+#### 7. Expensive reasoning should happen once.####
+
+Complex AI processing should occur primarily during ingestion.
 
 After ingestion, knowledge should already be structured sufficiently to allow fast retrieval and conversation using smaller or faster models when appropriate.
 
-####8. Modularity is mandatory.####
+#### 8. Modularity is mandatory.####
 
 Every major capability should exist as an independent module.
 
