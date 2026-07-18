@@ -85,7 +85,15 @@ The application should automatically:
 
 Users should organize only when they want additional control.
 
-#### 6. AI should be transparent.
+#### 6. AI providers are infrastructure, not the product.
+
+The value of the PKS should not depend on whether it uses GPT-5.5, Claude, Gemini, or a local model.
+
+The AI should be replaceable.
+
+The knowledge layer is the product.
+
+#### 7. AI should be transparent.
 
 Every AI-generated response should clearly distinguish between:
 
@@ -95,13 +103,13 @@ Every AI-generated response should clearly distinguish between:
 
 Users should always understand where information originated.
 
-#### 7. Expensive reasoning should happen once.
+#### 8. Expensive reasoning should happen once.
 
 Complex AI processing should occur primarily during ingestion.
 
 After ingestion, knowledge should already be structured sufficiently to allow fast retrieval and conversation using smaller or faster models when appropriate.
 
-#### 8. Modularity is mandatory.
+#### 9. Modularity is mandatory.
 
 Every major capability should exist as an independent module.
 
@@ -325,7 +333,7 @@ The PKS should become the shared intelligence layer for future applications.
 
 The PKS should not attempt to become every AI application.
 
-Instead, it should become the foundational knowledge platform upon which future specialized assistants can operate.
+Instead, it should become the foundational knowledge platform upon which future specialized assistants can operate. In other words, the objective is to build the best possible knowledge engine.
 
 Examples include:
 
