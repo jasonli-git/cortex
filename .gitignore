@@ -1,1 +1,18 @@
 .DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local data & secrets
+backend/data/
+backend/.env
+.env
+
+# Node (frontend, from Milestone 8)
+node_modules/
+frontend/dist/
