@@ -15,3 +15,8 @@ All notable changes to AI PKS. Format loosely follows [Keep a Changelog](https:/
   provenance); repository protocols with SQLite implementations; `KnowledgeEngine` API
   with automatic versioning, idempotent relationships, validated provenance, and
   resource/chunk management. 21 unit tests.
+- **Milestone 2** — event-driven pipeline + resource intake: durable job queue with
+  retries, pipeline registry (stages subscribe to events), background worker thread;
+  PDF/Markdown/plaintext parsers with native-structure extraction; structure-aware
+  chunking; upload + note APIs with SHA-256 dedup and per-resource pipeline status.
+  29 new tests including end-to-end upload → ready.

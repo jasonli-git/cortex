@@ -19,14 +19,21 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] Engine API: knowledge object / relationship / provenance CRUD, versioning
 - [x] Unit tests for engine behavior
 
-## Milestone 2 — Event system + resource intake (next, pending approval)
+## Milestone 2 — Event system + resource intake
 
-- [ ] Durable job queue (jobs table + migration) and async worker
-- [ ] Event bus with pipeline-stage subscription
-- [ ] Resource upload API (file + note), on-disk resource store
-- [ ] Parsers: PDF, Markdown, plaintext
-- [ ] Structure-aware chunking (no AI yet)
-- [ ] Pipeline status visible via API
+- [x] Durable job queue (jobs table + migration) and worker thread
+- [x] Event bus with pipeline-stage subscription
+- [x] Resource upload API (file + note), on-disk resource store
+- [x] Parsers: PDF, Markdown, plaintext
+- [x] Structure-aware chunking (no AI yet)
+- [x] Pipeline status visible via API
+
+## Milestone 3 — AI extraction (next, pending approval)
+
+- [ ] CompletionProvider abstraction + Anthropic implementation
+- [ ] Structured-output extraction stages: structure, summaries, entities/concepts
+- [ ] Extraction writes knowledge objects with provenance via the engine
+- [ ] Requires ANTHROPIC_API_KEY (user)
 
 ## Parked / needs user input
 
