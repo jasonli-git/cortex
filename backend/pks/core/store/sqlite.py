@@ -316,6 +316,12 @@ class SqliteResourceRepository:
         ).fetchone()
         return _row_to_resource(row) if row else None
 
+    def get_by_hash(self, content_hash: str) -> Resource | None:
+        row = self._conn.execute(
+            "SELECT * FROM resources WHERE content_hash = ? LIMIT 1", (content_hash,)
+        ).fetchone()
+        return _row_to_resource(row) if row else None
+
     def list(self) -> list[Resource]:
         rows = self._conn.execute("SELECT * FROM resources ORDER BY created_at")
         return [_row_to_resource(row) for row in rows]
@@ -405,6 +411,14 @@ class SqliteStore:
         self.relationships = SqliteRelationshipRepository(self._conn)
         self.provenance = SqliteProvenanceRepository(self._conn)
         self.resources = SqliteResourceRepository(self._conn)
+
+    @property
+    def connection(self) -> sqlite3.Connection:
+        """The underlying connection, for module-local data access (e.g. the job queue).
+
+        The schema itself stays centrally owned by core migrations.
+        """
+        return self._conn
 
     @contextmanager
     def transaction(self):

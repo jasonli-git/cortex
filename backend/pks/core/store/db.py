@@ -15,10 +15,16 @@ def utcnow() -> str:
 def connect(db_path: Path | str) -> sqlite3.Connection:
     if str(db_path) != ":memory:":
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(db_path))
+    # check_same_thread=False: FastAPI may run a request's dependencies and
+    # handler on different threads. Access to one connection is always
+    # sequential (per-request or per-worker), never concurrent.
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     conn.execute("PRAGMA journal_mode = WAL")
+    # API and worker hold separate connections; wait briefly instead of
+    # failing when the other one is mid-write.
+    conn.execute("PRAGMA busy_timeout = 5000")
     return conn
 
 

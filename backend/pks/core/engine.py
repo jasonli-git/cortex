@@ -302,6 +302,17 @@ class KnowledgeEngine:
     def list_resources(self) -> list[Resource]:
         return self._store.resources.list()
 
+    def find_resource_by_hash(self, content_hash: str) -> Resource | None:
+        """Content-level dedup: an identical upload maps to the existing resource."""
+        return self._store.resources.get_by_hash(content_hash)
+
+    def set_resource_path(self, resource_id: str, path: str) -> Resource:
+        resource = self.get_resource(resource_id)
+        updated = resource.model_copy(update={"path": path, "updated_at": utcnow()})
+        with self._store.transaction():
+            self._store.resources.update(updated)
+        return updated
+
     def set_resource_status(
         self, resource_id: str, status: ResourceStatus | str, *, error: str | None = None
     ) -> Resource:

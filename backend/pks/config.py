@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8000
 
+    # Pipeline worker
+    worker_poll_interval: float = 0.5
+
     # AI provider tiers (used from Milestone 3 onward).
     # Heavy: ingestion-time extraction. Fast: chat / navigation.
     heavy_model: str = "claude-opus-4-8"
