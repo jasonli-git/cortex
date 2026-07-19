@@ -12,12 +12,21 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] Smoke tests passing (`uv run pytest`)
 - [x] Update .gitignore for Python/Node artifacts
 
-## Milestone 1 — Core Knowledge Engine (next, pending approval)
+## Milestone 1 — Core Knowledge Engine
 
-- [ ] Schema + migrations for core tables
-- [ ] Repository interfaces + SQLite implementations
-- [ ] Engine API: knowledge object / relationship / provenance CRUD, versioning
-- [ ] Unit tests for engine behavior
+- [x] Schema + migrations for core tables
+- [x] Repository interfaces + SQLite implementations
+- [x] Engine API: knowledge object / relationship / provenance CRUD, versioning
+- [x] Unit tests for engine behavior
+
+## Milestone 2 — Event system + resource intake (next, pending approval)
+
+- [ ] Durable job queue (jobs table + migration) and async worker
+- [ ] Event bus with pipeline-stage subscription
+- [ ] Resource upload API (file + note), on-disk resource store
+- [ ] Parsers: PDF, Markdown, plaintext
+- [ ] Structure-aware chunking (no AI yet)
+- [ ] Pipeline status visible via API
 
 ## Parked / needs user input
 

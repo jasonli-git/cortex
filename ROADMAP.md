@@ -8,7 +8,7 @@ updated docs, and user review before the next begins.
 | M | Status | Deliverable |
 |---|--------|-------------|
 | 0 | ✅ done | **Scaffolding** — repo layout, tooling (uv, ruff, pytest), config, empty FastAPI app with health check, project docs |
-| 1 | ⬜ | **Core Knowledge Engine** — schema, migrations, repositories, engine API (CRUD for knowledge objects / relationships / provenance, versioning), unit tests |
+| 1 | ✅ done | **Core Knowledge Engine** — schema, migrations, repositories, engine API (CRUD for knowledge objects / relationships / provenance, versioning), unit tests |
 | 2 | ⬜ | **Event system + resource intake** — durable jobs, event bus, upload API, PDF/MD/TXT parsers, structure-aware chunking (no AI yet) |
 | 3 | ⬜ | **AI extraction** — provider abstraction, structure/summary/entity/concept stages writing knowledge objects with provenance |
 | 4 | ⬜ | **Embeddings + hybrid search** — local embeddings, sqlite-vec, FTS5, combined ranking, search API |
