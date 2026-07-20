@@ -11,10 +11,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from pks.core.engine import KnowledgeEngine
+from pks.core.store.sqlite import SqliteStore
 from pks.events.models import Job
 from pks.events.queue import JobQueue
-
-# get_settings imported lazily to avoid a config dependency here; typed loosely.
 
 
 @dataclass
@@ -22,6 +21,7 @@ class StageContext:
     """What a pipeline stage gets to work with."""
 
     engine: KnowledgeEngine
+    store: SqliteStore  # for module-local indexes (embeddings, FTS) on the worker's connection
     settings: object  # pks.config.Settings; typed loosely to keep events config-free
     emit: Callable[[str, dict], None]  # publish a follow-up event
 

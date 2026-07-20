@@ -13,22 +13,27 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from pks import __version__
-from pks.api import knowledge, resources
+from pks.api import knowledge, resources, search
 from pks.config import Settings, get_settings
 from pks.core.errors import NotFoundError, ValidationError
 from pks.core.store.sqlite import SqliteStore
+from pks.embeddings import EmbeddingProvider, make_embedder
 from pks.events.worker import WorkerThread
 from pks.pipeline import build_pipeline
 from pks.providers import CompletionProvider, make_provider
 
 
 def create_app(
-    settings: Settings | None = None, provider: CompletionProvider | None = None
+    settings: Settings | None = None,
+    provider: CompletionProvider | None = None,
+    embedder: EmbeddingProvider | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     if provider is None:
         provider = make_provider(settings)
-    registry = build_pipeline(provider)
+    if embedder is None:
+        embedder = make_embedder(settings)
+    registry = build_pipeline(provider, embedder)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -45,9 +50,11 @@ def create_app(
     app = FastAPI(title="AI PKS", version=__version__, lifespan=lifespan)
     app.state.settings = settings
     app.state.registry = registry
+    app.state.embedder = embedder
 
     app.include_router(resources.router)
     app.include_router(knowledge.router)
+    app.include_router(search.router)
 
     @app.exception_handler(NotFoundError)
     async def not_found(request: Request, exc: NotFoundError) -> JSONResponse:

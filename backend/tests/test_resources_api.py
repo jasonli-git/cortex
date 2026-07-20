@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from pks.api.app import create_app
 from pks.config import Settings
+from tests.fakes import FakeEmbedder
 
 
 @pytest.fixture
@@ -15,9 +16,9 @@ def client(tmp_path):
         _env_file=None,
         data_dir=tmp_path / "data",
         worker_poll_interval=0.02,
-        anthropic_api_key=None,  # AI disabled: pipeline ends at chunking
+        anthropic_api_key=None,  # AI disabled: no extraction stages
     )
-    app = create_app(settings=settings)
+    app = create_app(settings=settings, embedder=FakeEmbedder())
     with TestClient(app) as client:
         yield client
 
@@ -58,6 +59,7 @@ def test_upload_text_end_to_end(client):
     assert {job["type"]: job["status"] for job in status["jobs"]} == {
         "parse": "done",
         "chunk": "done",
+        "index": "done",
     }
 
 

@@ -54,6 +54,7 @@ class Worker:
 
         ctx = StageContext(
             engine=engine,
+            store=self._store,
             settings=self._settings,
             emit=lambda event, payload: self._registry.publish(queue, event, payload),
         )

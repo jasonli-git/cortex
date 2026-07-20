@@ -1,7 +1,7 @@
 """Extraction pipeline stages: chunked text → knowledge objects with provenance.
 
     resource.chunked → [extract_knowledge] → resource.extracted
-                     → [summarize]         → ready, resource.processed
+                     → [summarize] → resource.summarized (the index stage follows)
 
 Entity merging here is deliberately naive (case-insensitive name/alias match
 within a type). Embedding-based dedup and merge arrive in Milestone 5; keeping
@@ -52,8 +52,7 @@ def register_stages(registry: PipelineRegistry, provider: CompletionProvider) ->
         result = extractor.summarize(provider, resource.title, chunks)
         _upsert_summary(ctx.engine, resource, result.summary, result.key_points)
 
-        ctx.engine.set_resource_status(resource.id, "ready")
-        ctx.emit("resource.processed", {"resource_id": resource.id})
+        ctx.emit("resource.summarized", {"resource_id": resource.id})
 
 
 def _upsert_summary(

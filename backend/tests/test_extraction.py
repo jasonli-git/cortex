@@ -11,74 +11,16 @@ from pks.core import KnowledgeEngine
 from pks.core.models import ResourceChunk
 from pks.core.store import SqliteStore
 from pks.events import JobQueue, Worker
-from pks.extraction import prompts
 from pks.extraction.extractor import batch_chunks
 from pks.ingestion import intake
 from pks.pipeline import build_pipeline
 from pks.providers import make_provider
 from pks.providers.anthropic import AnthropicProvider
-
-ROME_MD = b"""# Rome
-
-## Founding
-
-Rome was founded in 753 BC, according to legend, by Romulus.
-
-## Republic
-
-The Roman Republic began in 509 BC after the last king was overthrown.
-"""
-
-EXTRACTION_RESPONSE = {
-    "entities": [
-        {
-            "type": "place",
-            "name": "Rome",
-            "description": "An ancient city, founded in 753 BC.",
-            "aliases": [],
-            "quote": "Rome was founded in 753 BC",
-            "chunk_ordinal": 0,
-        },
-        {
-            "type": "concept",
-            "name": "Roman Republic",
-            "description": "The Roman state after the monarchy, from 509 BC.",
-            "aliases": ["the Republic"],
-            "quote": "The Roman Republic began in 509 BC",
-            "chunk_ordinal": 1,
-        },
-    ],
-    "relations": [
-        {"from_name": "Roman Republic", "to_name": "Rome", "type": "located_in", "confidence": 0.9},
-        # References an entity that was never extracted; must be skipped.
-        {"from_name": "Rome", "to_name": "Carthage", "type": "related_to", "confidence": 0.5},
-    ],
-}
-
-SUMMARY_RESPONSE = {
-    "summary": "Rome was founded in 753 BC and became a republic in 509 BC.",
-    "key_points": ["Founded 753 BC", "Republic from 509 BC"],
-}
-
-
-class FakeProvider:
-    """Returns canned responses; records prompts for inspection."""
-
-    def __init__(self, extraction: dict = EXTRACTION_RESPONSE, summary: dict = SUMMARY_RESPONSE):
-        self._extraction = extraction
-        self._summary = summary
-        self.extraction_prompts: list[str] = []
-        self.summary_prompts: list[str] = []
-
-    def extract_structured(self, *, prompt, schema, system=None, tier="heavy", max_tokens=8192):
-        if schema is prompts.EXTRACTION_SCHEMA:
-            self.extraction_prompts.append(prompt)
-            return self._extraction
-        self.summary_prompts.append(prompt)
-        return self._summary
-
-    def complete(self, *, prompt, system=None, tier="fast", max_tokens=2048):
-        return "ok"
+from tests.fakes import (
+    ROME_MD,
+    FakeEmbedder,
+    FakeProvider,
+)
 
 
 @pytest.fixture
@@ -117,7 +59,7 @@ def ingest_and_drain(settings, store, registry, *, filename: str, content: bytes
 
 def test_pipeline_extracts_knowledge_with_provenance(settings, store, engine):
     fake = FakeProvider()
-    registry = build_pipeline(fake)
+    registry = build_pipeline(fake, FakeEmbedder())
 
     resource = ingest_and_drain(settings, store, registry, filename="rome.md", content=ROME_MD)
     assert resource.status.value == "ready", resource.error
@@ -140,7 +82,7 @@ def test_pipeline_extracts_knowledge_with_provenance(settings, store, engine):
 
 
 def test_pipeline_creates_summary_object(settings, store, engine):
-    registry = build_pipeline(FakeProvider())
+    registry = build_pipeline(FakeProvider(), FakeEmbedder())
     resource = ingest_and_drain(settings, store, registry, filename="rome.md", content=ROME_MD)
 
     [summary] = engine.list_knowledge_objects(type="summary")
@@ -171,10 +113,10 @@ def test_second_resource_merges_into_existing_entities(settings, store, engine):
             "relations": [],
         }
     )
-    registry = build_pipeline(FakeProvider())
+    registry = build_pipeline(FakeProvider(), FakeEmbedder())
     ingest_and_drain(settings, store, registry, filename="rome.md", content=ROME_MD)
 
-    registry2 = build_pipeline(fake)
+    registry2 = build_pipeline(fake, FakeEmbedder())
     second = ingest_and_drain(
         settings,
         store,
@@ -198,7 +140,7 @@ def test_second_resource_merges_into_existing_entities(settings, store, engine):
 def test_extraction_is_idempotent_on_provenance(settings, store, engine):
     """Re-running extraction (e.g. after a retry) must not duplicate evidence."""
     fake = FakeProvider()
-    registry = build_pipeline(fake)
+    registry = build_pipeline(fake, FakeEmbedder())
     resource = ingest_and_drain(settings, store, registry, filename="rome.md", content=ROME_MD)
 
     queue = JobQueue(store)
@@ -212,7 +154,7 @@ def test_extraction_is_idempotent_on_provenance(settings, store, engine):
 
 
 def test_pipeline_without_provider_marks_ready_after_chunk(settings, store, engine):
-    registry = build_pipeline(None)
+    registry = build_pipeline(None, FakeEmbedder())
     resource = ingest_and_drain(settings, store, registry, filename="rome.md", content=ROME_MD)
     assert resource.status.value == "ready"
     assert engine.list_knowledge_objects() == []
@@ -250,7 +192,7 @@ def test_knowledge_api_end_to_end(tmp_path):
         worker_poll_interval=0.02,
         anthropic_api_key=None,
     )
-    app = create_app(settings=settings, provider=FakeProvider())
+    app = create_app(settings=settings, provider=FakeProvider(), embedder=FakeEmbedder())
     with TestClient(app) as client:
         resource = client.post(
             "/api/resources/upload", files={"file": ("rome.md", ROME_MD)}

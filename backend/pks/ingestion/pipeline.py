@@ -3,9 +3,8 @@
     resource.uploaded → [parse] → resource.parsed → [chunk] → resource.chunked
 
 The parse stage persists its output (parsed.json alongside the original) so
-each stage is independently retryable. Extraction stages subscribe to
-`resource.chunked` (see pks.extraction); when AI is disabled the chunk stage
-is the end of the pipeline and marks the resource ready itself.
+each stage is independently retryable. Downstream stages (extraction, index)
+subscribe to `resource.chunked` — see pks.pipeline for the full chain.
 """
 
 from __future__ import annotations
@@ -25,7 +24,7 @@ def resource_dir(settings, resource: Resource) -> Path:
     return settings.resources_dir / resource.id
 
 
-def register_stages(registry: PipelineRegistry, *, mark_ready_after_chunk: bool) -> None:
+def register_stages(registry: PipelineRegistry) -> None:
     @registry.stage("parse", on="resource.uploaded")
     def parse(ctx: StageContext, payload: dict) -> None:
         resource = ctx.engine.get_resource(payload["resource_id"])
@@ -47,7 +46,4 @@ def register_stages(registry: PipelineRegistry, *, mark_ready_after_chunk: bool)
         doc = ParsedDocument.from_dict(json.loads(parsed_path.read_text(encoding="utf-8")))
 
         ctx.engine.set_chunks(resource.id, chunk_document(doc))
-        if mark_ready_after_chunk:
-            # AI disabled: chunking is the end of the pipeline.
-            ctx.engine.set_resource_status(resource.id, "ready")
         ctx.emit("resource.chunked", {"resource_id": resource.id})

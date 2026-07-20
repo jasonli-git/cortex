@@ -23,7 +23,7 @@ repository interfaces and all AI calls sit behind provider interfaces.
 |---|---|---|
 | 1 | Local-first web app | Personal system: private, free to run, simplest to build. Deployment can evolve later. |
 | 2 | Python 3.12 + FastAPI backend, React + TypeScript frontend | Python has the strongest document-parsing and AI ecosystem; ingestion is the heart of the system. Clean REST boundary between the two. |
-| 3 | SQLite + FTS5 (keyword) + sqlite-vec (vector) | One file, zero ops, transactional. Repository interfaces make Postgres + pgvector a drop-in swap. |
+| 3 | SQLite + FTS5 (keyword) + float32-BLOB vectors compared with numpy | One file, zero ops, transactional. sqlite-vec was considered and deferred: it is also a linear scan internally, so at personal scale it buys little while requiring a native extension loaded on every connection. `EmbeddingIndex` is the seam where sqlite-vec/pgvector slot in if scale demands. |
 | 4 | Durable job queue in the database + in-process async worker | Pipeline stages are event-driven and restart-safe without Redis/Celery. The event *interface* is stable; the transport is replaceable (spec principle 9). |
 | 5 | AI provider abstraction; Anthropic default | Heavy tier `claude-opus-4-8` for ingestion-time extraction, fast tier `claude-haiku-4-5` for chat — both config-driven. Spec principle 6: providers are infrastructure. |
 | 6 | Local embeddings (sentence-transformers) by default | Free, offline, private; Anthropic has no embeddings API. Swappable for Voyage/OpenAI via `EmbeddingProvider`. |
@@ -116,6 +116,24 @@ resource.uploaded
 
 Heavy models run only in this pipeline ("expensive reasoning happens once");
 chat and search assistance use the fast tier.
+
+Concrete stage chain (V1): `parse → chunk → extract_knowledge → summarize → index`,
+with `index` (embeddings + FTS) marking the resource ready. Without an API key the
+extraction stages are absent and `index` follows `chunk` directly — parsing,
+chunking, and search all work AI-free.
+
+## Search
+
+Hybrid retrieval fused with reciprocal-rank fusion (RRF), which avoids
+calibrating cosine similarity against BM25 scores:
+
+- **Semantic**: local sentence-transformers embeddings (chunks + knowledge
+  objects), stored as float32 BLOBs, cosine via numpy.
+- **Keyword**: FTS5 tables over chunk text and knowledge object
+  names/aliases/descriptions, ranked by BM25.
+
+Indexes are maintained by the `index` pipeline stage (explicit and retryable,
+not triggers); stale entries for deleted objects are skipped at query time.
 
 ## AI Strategy
 

@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     heavy_model: str = "claude-opus-4-8"
     fast_model: str = "claude-haiku-4-5"
 
+    # Local embedding model (sentence-transformers id); free and offline.
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+
     @property
     def db_path(self) -> Path:
         return self.data_dir / "pks.db"
