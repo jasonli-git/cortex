@@ -28,12 +28,21 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] Structure-aware chunking (no AI yet)
 - [x] Pipeline status visible via API
 
-## Milestone 3 — AI extraction (next, pending approval)
+## Milestone 3 — AI extraction
 
-- [ ] CompletionProvider abstraction + Anthropic implementation
-- [ ] Structured-output extraction stages: structure, summaries, entities/concepts
-- [ ] Extraction writes knowledge objects with provenance via the engine
-- [ ] Requires ANTHROPIC_API_KEY (user)
+- [x] CompletionProvider abstraction + Anthropic implementation
+- [x] Structured-output extraction stages: summaries, entities/concepts/events, relations
+- [x] Extraction writes knowledge objects with provenance via the engine
+- [x] ANTHROPIC_API_KEY configured in backend/.env (gitignored); verified live
+- Note: LLM structure *refinement* (improving "Page N" paths on outline-less PDFs)
+  deferred — parsers already provide native structure; revisit in Milestone 9
+
+## Milestone 4 — Embeddings + hybrid search (next, pending approval)
+
+- [ ] EmbeddingProvider abstraction + local sentence-transformers implementation
+- [ ] sqlite-vec vector index + embed pipeline stage
+- [ ] FTS5 keyword index over chunks and knowledge objects
+- [ ] Hybrid search service + API endpoint
 
 ## Parked / needs user input
 

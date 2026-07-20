@@ -20,3 +20,8 @@ All notable changes to AI PKS. Format loosely follows [Keep a Changelog](https:/
   PDF/Markdown/plaintext parsers with native-structure extraction; structure-aware
   chunking; upload + note APIs with SHA-256 dedup and per-resource pipeline status.
   29 new tests including end-to-end upload → ready.
+- **Milestone 3** — AI extraction: provider abstraction (heavy/fast tiers) with an
+  Anthropic structured-outputs implementation; extraction stages chained after chunking
+  produce entities/concepts/events with quote-level provenance, typed relationships with
+  confidence, and a per-document summary object; naive name/alias merging across
+  resources; knowledge browse API. Verified live against the Anthropic API.
