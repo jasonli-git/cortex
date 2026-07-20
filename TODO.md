@@ -51,12 +51,22 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] Relationship resolver falls back to the whole knowledge base (cross-resource links)
 - [x] Graph traversal API: /api/knowledge/graph and /api/knowledge/{id}/graph
 
-## Milestone 6 — Chat with provenance (next, pending approval)
+## Milestone 6 — Chat with provenance
 
-- [ ] RAG chat service on the fast tier using hybrid search retrieval
-- [ ] Per-claim source labels: PKS knowledge (with citations) vs. model knowledge
-- [ ] Conversations/messages persistence (migration) + API
-- [ ] Conversation context window management (recent turns)
+- [x] RAG chat service on the fast tier using hybrid search retrieval
+- [x] Per-segment source labels: PKS (validated citations) vs. model knowledge
+- [x] Conversations/messages persistence (migration 0004) + API
+- [x] Conversation context window management (recent turns)
+- Note: fast-tier (Haiku) grounding is imperfect — a cited claim can still misread
+  its source. Citations make this checkable; consider a heavy-tier chat option or
+  a verification pass post-V1.
+
+## Milestone 7 — Workspaces + notes (next, pending approval)
+
+- [ ] Workspaces table (migration) + engine/API CRUD
+- [ ] Workspace refs: attach/detach resources, knowledge objects, conversations
+- [ ] Notes already ingest via /api/resources/notes — wire into workspace flow
+- [ ] Optional workspace scoping for chat retrieval
 
 ## Parked / needs user input
 

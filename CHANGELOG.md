@@ -35,3 +35,7 @@ All notable changes to AI PKS. Format loosely follows [Keep a Changelog](https:/
   stage with embedding-similarity candidates confirmed by the heavy-tier model before
   merging; cross-resource relation resolution; graph traversal endpoints
   (`/api/knowledge/graph`, `/api/knowledge/{id}/graph`); idempotent provenance.
+- **Milestone 6** — chat with provenance: fast-tier RAG over hybrid-search retrieval;
+  answers structured as segments labeled PKS (validated, numbered citations with
+  excerpts) or model knowledge, with unbacked PKS claims downgraded; persisted
+  conversations with history windowing; `/api/chat` + conversation management.
