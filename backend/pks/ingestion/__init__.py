@@ -7,6 +7,6 @@ Modules:
 - pipeline: the parse/chunk stages wired into the event registry
 """
 
-from pks.ingestion.pipeline import build_registry
+from pks.ingestion import pipeline
 
-__all__ = ["build_registry"]
+__all__ = ["pipeline"]

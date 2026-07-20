@@ -15,6 +15,7 @@ def client(tmp_path):
         _env_file=None,
         data_dir=tmp_path / "data",
         worker_poll_interval=0.02,
+        anthropic_api_key=None,  # AI disabled: pipeline ends at chunking
     )
     app = create_app(settings=settings)
     with TestClient(app) as client:
