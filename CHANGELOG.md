@@ -25,3 +25,8 @@ All notable changes to AI PKS. Format loosely follows [Keep a Changelog](https:/
   produce entities/concepts/events with quote-level provenance, typed relationships with
   confidence, and a per-document summary object; naive name/alias merging across
   resources; knowledge browse API. Verified live against the Anthropic API.
+- **Milestone 4** — embeddings + hybrid search: local sentence-transformers embeddings
+  behind an EmbeddingProvider abstraction; vector store (float32 BLOB + numpy cosine)
+  and FTS5 keyword indexes maintained by a new `index` pipeline stage; hybrid search
+  with reciprocal-rank fusion over knowledge objects and chunks; `GET /api/search`.
+  Search works with or without an AI provider configured.

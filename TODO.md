@@ -37,12 +37,19 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - Note: LLM structure *refinement* (improving "Page N" paths on outline-less PDFs)
   deferred — parsers already provide native structure; revisit in Milestone 9
 
-## Milestone 4 — Embeddings + hybrid search (next, pending approval)
+## Milestone 4 — Embeddings + hybrid search
 
-- [ ] EmbeddingProvider abstraction + local sentence-transformers implementation
-- [ ] sqlite-vec vector index + embed pipeline stage
-- [ ] FTS5 keyword index over chunks and knowledge objects
-- [ ] Hybrid search service + API endpoint
+- [x] EmbeddingProvider abstraction + local sentence-transformers implementation
+- [x] Vector index (float32 BLOB + numpy; sqlite-vec deferred — see ARCHITECTURE #3)
+- [x] FTS5 keyword index over chunks and knowledge objects
+- [x] Hybrid search service (RRF fusion) + API endpoint
+
+## Milestone 5 — Relationships + dedup + graph API (next, pending approval)
+
+- [ ] Embedding-based duplicate detection with LLM-confirmed merge
+- [ ] Engine merge operation (relationships/provenance/aliases transfer, history kept)
+- [ ] Relationship-builder improvements (cross-resource linking)
+- [ ] Graph traversal API (neighborhood expansion for the UI)
 
 ## Parked / needs user input
 
