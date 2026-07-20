@@ -60,6 +60,15 @@ class EmbeddingIndex:
                 ),
             )
 
+    def get_vector(self, owner_type: OwnerType, owner_id: str, *, model: str) -> list[float] | None:
+        row = self._conn.execute(
+            "SELECT vector FROM embeddings WHERE owner_type = ? AND owner_id = ? AND model = ?",
+            (owner_type, owner_id, model),
+        ).fetchone()
+        if row is None:
+            return None
+        return np.frombuffer(row["vector"], dtype=np.float32).tolist()
+
     def get_text_hash(self, owner_type: OwnerType, owner_id: str, *, model: str) -> str | None:
         """The hash of the text currently embedded for this owner (None if not embedded)."""
         row = self._conn.execute(

@@ -165,23 +165,23 @@ class _Applier:
             if entity.chunk_ordinal is not None
             else None
         )
-        chunk_id = chunk.id if chunk else None
-        quote = entity.quote or None
-        # Idempotent on retries: skip an identical existing evidence link.
-        for prov in self._engine.get_provenance(knowledge_object_id=ko_id):
-            if (
-                prov.resource_id == self._resource.id
-                and prov.chunk_id == chunk_id
-                and prov.quote == quote
-            ):
-                return
+        # add_provenance is idempotent at the engine level (retries are safe).
         self._engine.add_provenance(
             knowledge_object_id=ko_id,
             resource_id=self._resource.id,
-            chunk_id=chunk_id,
-            quote=quote,
+            chunk_id=chunk.id if chunk else None,
+            quote=entity.quote or None,
         )
 
-    @staticmethod
-    def _resolve(name: str, name_to_id: dict[str, str]) -> str | None:
-        return name_to_id.get(name.strip().lower())
+    def _resolve(self, name: str, name_to_id: dict[str, str]) -> str | None:
+        """Resolve a relation endpoint: this batch's entities first, then the
+        whole knowledge base by name/alias — so relations can point at
+        knowledge extracted from other batches or other resources."""
+        key = name.strip().lower()
+        if key in name_to_id:
+            return name_to_id[key]
+        for ko in self._engine.list_knowledge_objects():
+            if key in {n.strip().lower() for n in (ko.name, *ko.aliases)}:
+                name_to_id[key] = ko.id
+                return ko.id
+        return None

@@ -4,6 +4,7 @@ import re
 import zlib
 
 from pks.extraction import prompts
+from pks.graph.dedup import DEDUP_SCHEMA
 
 ROME_MD = b"""# Rome
 
@@ -51,16 +52,26 @@ SUMMARY_RESPONSE = {
 class FakeProvider:
     """Returns canned responses; records prompts for inspection."""
 
-    def __init__(self, extraction: dict = EXTRACTION_RESPONSE, summary: dict = SUMMARY_RESPONSE):
+    def __init__(
+        self,
+        extraction: dict = EXTRACTION_RESPONSE,
+        summary: dict = SUMMARY_RESPONSE,
+        dedup: dict | None = None,
+    ):
         self._extraction = extraction
         self._summary = summary
+        self._dedup = dedup or {"same_entity": False, "reason": "not duplicates"}
         self.extraction_prompts: list[str] = []
         self.summary_prompts: list[str] = []
+        self.dedup_prompts: list[str] = []
 
     def extract_structured(self, *, prompt, schema, system=None, tier="heavy", max_tokens=8192):
         if schema is prompts.EXTRACTION_SCHEMA:
             self.extraction_prompts.append(prompt)
             return self._extraction
+        if schema is DEDUP_SCHEMA:
+            self.dedup_prompts.append(prompt)
+            return self._dedup
         self.summary_prompts.append(prompt)
         return self._summary
 

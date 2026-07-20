@@ -36,6 +36,10 @@ class Settings(BaseSettings):
     # Local embedding model (sentence-transformers id); free and offline.
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
 
+    # Cosine similarity above which two knowledge objects become merge
+    # candidates (an LLM still confirms before any merge happens).
+    dedup_similarity_threshold: float = 0.86
+
     @property
     def db_path(self) -> Path:
         return self.data_dir / "pks.db"

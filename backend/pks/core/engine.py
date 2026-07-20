@@ -205,6 +205,130 @@ class KnowledgeEngine:
         }
         return [self.get_knowledge_object(nid) for nid in sorted(neighbor_ids)]
 
+    def get_neighborhood(
+        self, ko_id: str, *, depth: int = 1
+    ) -> tuple[list[KnowledgeObject], list[Relationship]]:
+        """BFS neighborhood: all objects and relationships within `depth` hops."""
+        root = self.get_knowledge_object(ko_id)
+        nodes: dict[str, KnowledgeObject] = {root.id: root}
+        edges: dict[str, Relationship] = {}
+        frontier = [root.id]
+        for _ in range(depth):
+            next_frontier: list[str] = []
+            for node_id in frontier:
+                for rel in self._store.relationships.list_for(node_id):
+                    edges[rel.id] = rel
+                    for other_id in (rel.from_id, rel.to_id):
+                        if other_id not in nodes:
+                            nodes[other_id] = self.get_knowledge_object(other_id)
+                            next_frontier.append(other_id)
+            frontier = next_frontier
+        return list(nodes.values()), list(edges.values())
+
+    def get_graph(self, *, limit: int = 500) -> tuple[list[KnowledgeObject], list[Relationship]]:
+        """The whole knowledge graph (capped), for overview visualisation."""
+        nodes = self._store.knowledge_objects.list()[:limit]
+        node_ids = {node.id for node in nodes}
+        edges = [
+            rel
+            for rel in self._store.relationships.list_all()
+            if rel.from_id in node_ids and rel.to_id in node_ids
+        ]
+        return nodes, edges
+
+    def merge_knowledge_objects(
+        self, target_id: str, source_id: str, *, changed_by: str = "dedup"
+    ) -> KnowledgeObject:
+        """Merge `source` into `target` (duplicate resolution).
+
+        The target absorbs the source's name (as an alias), aliases,
+        relationships (conflicts keep the higher confidence), provenance, and
+        metadata (target's values win). The source is deleted; both histories
+        record the merge, and the source's final snapshot names the target in
+        `metadata.merged_into`.
+        """
+        if target_id == source_id:
+            raise ValidationError("cannot merge a knowledge object into itself")
+        target = self.get_knowledge_object(target_id)
+        source = self.get_knowledge_object(source_id)
+        if target.type != source.type:
+            raise ValidationError(
+                f"cannot merge across types ({source.type} into {target.type})"
+            )
+
+        known = {a.lower() for a in (target.name, *target.aliases)}
+        merged_aliases = list(target.aliases)
+        for alias in (source.name, *source.aliases):
+            if alias.lower() not in known:
+                merged_aliases.append(alias)
+                known.add(alias.lower())
+
+        updated_target = target.model_copy(
+            update={
+                "aliases": merged_aliases,
+                "description": target.description or source.description,
+                "metadata": {**source.metadata, **target.metadata},
+                "version": target.version + 1,
+                "updated_at": utcnow(),
+            }
+        )
+        source_final = source.model_copy(
+            update={"metadata": {**source.metadata, "merged_into": target.id}}
+        )
+
+        with self._store.transaction():
+            # Re-point the source's relationships at the target.
+            for rel in self._store.relationships.list_for(source.id):
+                self._store.relationships.delete(rel.id)
+                new_from = target.id if rel.from_id == source.id else rel.from_id
+                new_to = target.id if rel.to_id == source.id else rel.to_id
+                if new_from == new_to:
+                    continue  # source↔target relation collapses away
+                existing = next(
+                    (
+                        r
+                        for r in self._store.relationships.list_for(new_from)
+                        if r.from_id == new_from and r.to_id == new_to and r.type == rel.type
+                    ),
+                    None,
+                )
+                confidence = (
+                    max(rel.confidence, existing.confidence) if existing else rel.confidence
+                )
+                self._store.relationships.upsert(
+                    rel.model_copy(
+                        update={
+                            "id": _new_id(),
+                            "from_id": new_from,
+                            "to_id": new_to,
+                            "confidence": confidence,
+                            "updated_at": utcnow(),
+                        }
+                    )
+                )
+
+            # Transfer provenance (skipping duplicates); the source's own rows
+            # cascade away when it is deleted below.
+            existing_keys = {
+                (p.resource_id, p.chunk_id, p.quote)
+                for p in self._store.provenance.list_for_knowledge_object(target.id)
+            }
+            for prov in self._store.provenance.list_for_knowledge_object(source.id):
+                key = (prov.resource_id, prov.chunk_id, prov.quote)
+                if key in existing_keys:
+                    continue
+                existing_keys.add(key)
+                self._store.provenance.insert(
+                    prov.model_copy(update={"id": _new_id(), "knowledge_object_id": target.id})
+                )
+
+            self._store.knowledge_objects.update(updated_target)
+            self._record_version(updated_target, VersionOperation.UPDATED, changed_by)
+            self._store.knowledge_objects.delete(source.id)
+            self._record_version(source_final, VersionOperation.DELETED, changed_by)
+
+        return updated_target
+
     # ------------------------------------------------------------------
     # Provenance
     # ------------------------------------------------------------------
@@ -231,6 +355,21 @@ class KnowledgeEngine:
             chunk = self._store.resources.get_chunk(chunk_id)
             if chunk is None or chunk.resource_id != resource_id:
                 raise ValidationError(f"chunk {chunk_id!r} does not belong to {resource_id!r}")
+
+        # Idempotent: an identical evidence link (e.g. from a retried pipeline
+        # stage) returns the existing row instead of duplicating it.
+        existing = (
+            self._store.provenance.list_for_knowledge_object(knowledge_object_id)
+            if knowledge_object_id is not None
+            else self._store.provenance.list_for_relationship(relationship_id)  # type: ignore[arg-type]
+        )
+        for prov in existing:
+            if (
+                prov.resource_id == resource_id
+                and prov.chunk_id == chunk_id
+                and prov.quote == quote
+            ):
+                return prov
 
         prov = Provenance(
             id=_new_id(),
@@ -259,6 +398,10 @@ class KnowledgeEngine:
             return self._store.provenance.list_for_knowledge_object(knowledge_object_id)
         assert relationship_id is not None
         return self._store.provenance.list_for_relationship(relationship_id)
+
+    def knowledge_object_ids_for_resource(self, resource_id: str) -> list[str]:
+        """Ids of knowledge objects that have evidence in the given resource."""
+        return self._store.provenance.knowledge_object_ids_for_resource(resource_id)
 
     # ------------------------------------------------------------------
     # Resources (evidence)

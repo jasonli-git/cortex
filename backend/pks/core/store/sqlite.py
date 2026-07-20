@@ -234,6 +234,10 @@ class SqliteRelationshipRepository:
         )
         return [_row_to_relationship(row) for row in rows]
 
+    def list_all(self) -> list[Relationship]:
+        rows = self._conn.execute("SELECT * FROM relationships ORDER BY created_at, id")
+        return [_row_to_relationship(row) for row in rows]
+
 
 class SqliteProvenanceRepository:
     def __init__(self, conn: sqlite3.Connection):
@@ -281,6 +285,16 @@ class SqliteProvenanceRepository:
 
     def list_for_relationship(self, rel_id: str) -> list[Provenance]:
         return self._list("relationship_id", rel_id)
+
+    def knowledge_object_ids_for_resource(self, resource_id: str) -> list[str]:
+        rows = self._conn.execute(
+            """
+            SELECT DISTINCT knowledge_object_id FROM provenance
+            WHERE resource_id = ? AND knowledge_object_id IS NOT NULL
+            """,
+            (resource_id,),
+        )
+        return [row["knowledge_object_id"] for row in rows]
 
 
 class SqliteResourceRepository:
