@@ -44,12 +44,19 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] FTS5 keyword index over chunks and knowledge objects
 - [x] Hybrid search service (RRF fusion) + API endpoint
 
-## Milestone 5 — Relationships + dedup + graph API (next, pending approval)
+## Milestone 5 — Relationships + dedup + graph API
 
-- [ ] Embedding-based duplicate detection with LLM-confirmed merge
-- [ ] Engine merge operation (relationships/provenance/aliases transfer, history kept)
-- [ ] Relationship-builder improvements (cross-resource linking)
-- [ ] Graph traversal API (neighborhood expansion for the UI)
+- [x] Embedding-based duplicate detection with LLM-confirmed merge (dedupe stage)
+- [x] Engine merge operation (relationships/provenance/aliases transfer, history kept)
+- [x] Relationship resolver falls back to the whole knowledge base (cross-resource links)
+- [x] Graph traversal API: /api/knowledge/graph and /api/knowledge/{id}/graph
+
+## Milestone 6 — Chat with provenance (next, pending approval)
+
+- [ ] RAG chat service on the fast tier using hybrid search retrieval
+- [ ] Per-claim source labels: PKS knowledge (with citations) vs. model knowledge
+- [ ] Conversations/messages persistence (migration) + API
+- [ ] Conversation context window management (recent turns)
 
 ## Parked / needs user input
 

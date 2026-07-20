@@ -30,3 +30,8 @@ All notable changes to AI PKS. Format loosely follows [Keep a Changelog](https:/
   and FTS5 keyword indexes maintained by a new `index` pipeline stage; hybrid search
   with reciprocal-rank fusion over knowledge objects and chunks; `GET /api/search`.
   Search works with or without an AI provider configured.
+- **Milestone 5** — dedup, merge, and graph: engine-level merge preserving history,
+  provenance, and relationships (higher confidence wins on conflicts); dedupe pipeline
+  stage with embedding-similarity candidates confirmed by the heavy-tier model before
+  merging; cross-resource relation resolution; graph traversal endpoints
+  (`/api/knowledge/graph`, `/api/knowledge/{id}/graph`); idempotent provenance.

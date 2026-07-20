@@ -12,7 +12,7 @@ updated docs, and user review before the next begins.
 | 2 | ✅ done | **Event system + resource intake** — durable jobs, event bus, upload API, PDF/MD/TXT parsers, structure-aware chunking (no AI yet) |
 | 3 | ✅ done | **AI extraction** — provider abstraction, structure/summary/entity/concept stages writing knowledge objects with provenance |
 | 4 | ✅ done | **Embeddings + hybrid search** — local embeddings, sqlite-vec, FTS5, combined ranking, search API |
-| 5 | ⬜ | **Relationships + dedup + graph API** — relationship builder stage, merge-on-ingest, graph traversal endpoints |
+| 5 | ✅ done | **Relationships + dedup + graph API** — relationship builder stage, merge-on-ingest, graph traversal endpoints |
 | 6 | ⬜ | **Chat with provenance** — RAG service, fast-model conversation, per-claim source labels (PKS vs. model) |
 | 7 | ⬜ | **Workspaces + notes** — workspace CRUD/refs, note-as-resource fast path through the pipeline |
 | 8 | ⬜ | **Frontend** — library, upload with pipeline progress, search, knowledge-object detail with provenance, graph view, chat, workspaces |
