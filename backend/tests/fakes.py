@@ -3,6 +3,7 @@
 import re
 import zlib
 
+from pks.chat.prompts import CHAT_SCHEMA
 from pks.extraction import prompts
 from pks.graph.dedup import DEDUP_SCHEMA
 
@@ -57,13 +58,22 @@ class FakeProvider:
         extraction: dict = EXTRACTION_RESPONSE,
         summary: dict = SUMMARY_RESPONSE,
         dedup: dict | None = None,
+        chat: dict | None = None,
     ):
         self._extraction = extraction
         self._summary = summary
         self._dedup = dedup or {"same_entity": False, "reason": "not duplicates"}
+        self._chat = chat or {
+            "segments": [
+                {"text": "From your notes: yes.", "source": "pks", "source_numbers": [1]},
+                {"text": "In general, that holds.", "source": "model", "source_numbers": []},
+            ]
+        }
         self.extraction_prompts: list[str] = []
         self.summary_prompts: list[str] = []
         self.dedup_prompts: list[str] = []
+        self.chat_prompts: list[str] = []
+        self.chat_tiers: list[str] = []
 
     def extract_structured(self, *, prompt, schema, system=None, tier="heavy", max_tokens=8192):
         if schema is prompts.EXTRACTION_SCHEMA:
@@ -72,6 +82,10 @@ class FakeProvider:
         if schema is DEDUP_SCHEMA:
             self.dedup_prompts.append(prompt)
             return self._dedup
+        if schema is CHAT_SCHEMA:
+            self.chat_prompts.append(prompt)
+            self.chat_tiers.append(tier)
+            return self._chat
         self.summary_prompts.append(prompt)
         return self._summary
 

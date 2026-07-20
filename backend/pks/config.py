@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     # candidates (an LLM still confirms before any merge happens).
     dedup_similarity_threshold: float = 0.86
 
+    # Chat: retrieval breadth and how many recent messages ride along.
+    chat_context_chunks: int = 6
+    chat_context_objects: int = 4
+    chat_history_limit: int = 10
+
     @property
     def db_path(self) -> Path:
         return self.data_dir / "pks.db"

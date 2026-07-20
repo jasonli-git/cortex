@@ -13,7 +13,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from pks import __version__
-from pks.api import knowledge, resources, search
+from pks.api import chat, knowledge, resources, search
 from pks.config import Settings, get_settings
 from pks.core.errors import NotFoundError, ValidationError
 from pks.core.store.sqlite import SqliteStore
@@ -51,10 +51,12 @@ def create_app(
     app.state.settings = settings
     app.state.registry = registry
     app.state.embedder = embedder
+    app.state.provider = provider
 
     app.include_router(resources.router)
     app.include_router(knowledge.router)
     app.include_router(search.router)
+    app.include_router(chat.router)
 
     @app.exception_handler(NotFoundError)
     async def not_found(request: Request, exc: NotFoundError) -> JSONResponse:
