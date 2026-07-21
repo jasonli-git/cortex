@@ -121,5 +121,11 @@ def _ingest(
     original.write_bytes(content)
     resource = engine.set_resource_path(resource.id, relative_path)
 
+    engine.record_learning_event(
+        "note_written" if resource_type is ResourceType.NOTE else "resource_ingested",
+        subject_type="resource",
+        subject_id=resource.id,
+        detail={"title": resource.title},
+    )
     registry.publish(queue, "resource.uploaded", {"resource_id": resource.id})
     return resource, True

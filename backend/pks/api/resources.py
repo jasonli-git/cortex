@@ -6,6 +6,7 @@ from fastapi import APIRouter, Form, UploadFile
 from pydantic import BaseModel
 
 from pks.api.deps import EngineDep, QueueDep, RegistryDep, SettingsDep
+from pks.core.errors import ValidationError
 from pks.core.models import Resource, ResourceChunk, ResourceRelationship
 from pks.events.models import Job
 from pks.ingestion import intake
@@ -79,6 +80,29 @@ def create_note(
     if note.workspace_id is not None:
         engine.attach_to_workspace(note.workspace_id, "resource", resource.id)
     return IngestResult(resource=resource, created=created)
+
+
+@router.post("/{resource_id}/reprocess", response_model=Resource)
+def reprocess_resource(
+    resource_id: str,
+    engine: EngineDep,
+    settings: SettingsDep,
+    registry: RegistryDep,
+    queue: QueueDep,
+) -> Resource:
+    """Re-run the full pipeline on a resource from its stored original.
+
+    Chunks and indexes are rebuilt; knowledge objects are enriched in place
+    (extraction and provenance are idempotent), so nothing accumulated is lost.
+    """
+    resource = engine.get_resource(resource_id)
+    if resource.status in ("pending", "processing"):
+        raise ValidationError("resource is already being processed")
+    if not resource.path or not (settings.resources_dir / resource.path).exists():
+        raise ValidationError("original file is missing; re-upload the resource instead")
+    resource = engine.set_resource_status(resource_id, "pending")
+    registry.publish(queue, "resource.uploaded", {"resource_id": resource_id})
+    return resource
 
 
 @router.get("", response_model=list[Resource])

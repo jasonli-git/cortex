@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../api'
 import { Card, ErrorNote, SectionTitle, StatusBadge } from '../components/ui'
-import type { Resource, ResourceChunk, ResourceStatusOut } from '../types'
+import type { Resource, ResourceChunk, ResourceStatusOut, Workspace } from '../types'
 
 export default function LibraryPage() {
   const [resources, setResources] = useState<Resource[]>([])
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([])
+  const [workspaceId, setWorkspaceId] = useState('')
   const [selected, setSelected] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [noteOpen, setNoteOpen] = useState(false)
@@ -14,7 +16,10 @@ export default function LibraryPage() {
     api.listResources().then(setResources).catch((e) => setError(e.message))
   }, [])
 
-  useEffect(refresh, [refresh])
+  useEffect(() => {
+    refresh()
+    api.listWorkspaces().then(setWorkspaces).catch(() => {})
+  }, [refresh])
 
   // Poll while anything is still being processed.
   const busy = resources.some((r) => r.status === 'pending' || r.status === 'processing')
@@ -28,7 +33,7 @@ export default function LibraryPage() {
     if (!files?.length) return
     setError(null)
     try {
-      for (const file of Array.from(files)) await api.upload(file)
+      for (const file of Array.from(files)) await api.upload(file, workspaceId || undefined)
       refresh()
     } catch (e) {
       setError((e as Error).message)
@@ -40,7 +45,24 @@ export default function LibraryPage() {
       <div className="min-w-0 flex-1">
         <div className="mb-4 flex items-center justify-between">
           <h1 className="text-xl font-bold">Library</h1>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            {workspaces.length > 0 && (
+              <label className="flex items-center gap-1 text-xs text-stone-500">
+                into
+                <select
+                  value={workspaceId}
+                  onChange={(e) => setWorkspaceId(e.target.value)}
+                  className="rounded-md border border-stone-300 bg-white px-2 py-1.5 text-xs"
+                >
+                  <option value="">no workspace</option>
+                  {workspaces.map((workspace) => (
+                    <option key={workspace.id} value={workspace.id}>
+                      {workspace.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <button
               onClick={() => setNoteOpen((v) => !v)}
               className="rounded-md border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-stone-50"
@@ -64,7 +86,12 @@ export default function LibraryPage() {
           </div>
         </div>
         <ErrorNote error={error} />
-        {noteOpen && <NoteForm onDone={() => (setNoteOpen(false), refresh())} />}
+        {noteOpen && (
+          <NoteForm
+            workspaceId={workspaceId || undefined}
+            onDone={() => (setNoteOpen(false), refresh())}
+          />
+        )}
         <div className="mt-3 flex flex-col gap-2">
           {resources.length === 0 && (
             <Card className="text-sm text-stone-500">
@@ -97,19 +124,19 @@ export default function LibraryPage() {
           ))}
         </div>
       </div>
-      {selected && <ResourceDetail id={selected} />}
+      {selected && <ResourceDetail id={selected} onReprocessed={refresh} />}
     </div>
   )
 }
 
-function NoteForm({ onDone }: { onDone: () => void }) {
+function NoteForm({ workspaceId, onDone }: { workspaceId?: string; onDone: () => void }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   const submit = async () => {
     try {
-      await api.createNote(title, content)
+      await api.createNote(title, content, workspaceId)
       onDone()
     } catch (e) {
       setError((e as Error).message)
@@ -144,20 +171,43 @@ function NoteForm({ onDone }: { onDone: () => void }) {
   )
 }
 
-function ResourceDetail({ id }: { id: string }) {
+function ResourceDetail({ id, onReprocessed }: { id: string; onReprocessed: () => void }) {
   const [status, setStatus] = useState<ResourceStatusOut | null>(null)
   const [chunks, setChunks] = useState<ResourceChunk[]>([])
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const load = useCallback(() => {
     api.resourceStatus(id).then(setStatus).catch(() => setStatus(null))
     api.resourceChunks(id).then(setChunks).catch(() => setChunks([]))
   }, [id])
+  useEffect(load, [load])
+
+  const reprocess = async () => {
+    setError(null)
+    try {
+      await api.reprocess(id)
+      onReprocessed()
+      load()
+    } catch (e) {
+      setError((e as Error).message)
+    }
+  }
 
   if (!status) return null
   return (
     <div className="w-96 shrink-0">
       <Card>
-        <SectionTitle>Pipeline</SectionTitle>
+        <div className="flex items-center justify-between">
+          <SectionTitle>Pipeline</SectionTitle>
+          <button
+            onClick={reprocess}
+            className="mb-2 rounded-md border border-stone-300 px-2 py-1 text-xs font-medium hover:bg-stone-50"
+            title="Re-run the full pipeline from the stored original"
+          >
+            Reprocess
+          </button>
+        </div>
+        <ErrorNote error={error} />
         <div className="flex flex-col gap-1">
           {status.jobs.map((job) => (
             <div key={job.id} className="flex items-center justify-between text-sm">

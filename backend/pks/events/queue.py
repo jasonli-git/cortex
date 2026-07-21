@@ -104,14 +104,32 @@ class JobQueue:
         row = self._conn.execute("SELECT * FROM jobs WHERE id = ?", (job_id,)).fetchone()
         return _row_to_job(row) if row else None
 
-    def list(self, *, status: JobStatus | None = None) -> list[Job]:
-        if status is None:
-            rows = self._conn.execute("SELECT * FROM jobs ORDER BY created_at, id")
-        else:
-            rows = self._conn.execute(
-                "SELECT * FROM jobs WHERE status = ? ORDER BY created_at, id", (status,)
+    def list(
+        self,
+        *,
+        status: JobStatus | None = None,
+        newest_first: bool = False,
+        limit: int | None = None,
+    ) -> list[Job]:
+        order = "DESC" if newest_first else "ASC"
+        sql = f"SELECT * FROM jobs ORDER BY created_at {order}, id"  # noqa: S608
+        params: list[object] = []
+        if status is not None:
+            sql = (
+                f"SELECT * FROM jobs WHERE status = ? ORDER BY created_at {order}, id"  # noqa: S608
             )
-        return [_row_to_job(row) for row in rows]
+            params.append(status)
+        if limit is not None:
+            sql += " LIMIT ?"
+            params.append(limit)
+        return [_row_to_job(row) for row in self._conn.execute(sql, params)]
+
+    def counts(self) -> dict[str, int]:
+        rows = self._conn.execute("SELECT status, COUNT(*) AS n FROM jobs GROUP BY status")
+        counts = {status.value: 0 for status in JobStatus}
+        for row in rows:
+            counts[row["status"]] = row["n"]
+        return counts
 
     def list_for_resource(self, resource_id: str) -> list[Job]:
         rows = self._conn.execute(

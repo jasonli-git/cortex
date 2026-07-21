@@ -153,3 +153,25 @@ class WorkspaceRef(BaseModel):
     object_type: WorkspaceRefType
     object_id: str
     created_at: str
+
+
+class LearningEventKind(StrEnum):
+    RESOURCE_INGESTED = "resource_ingested"
+    NOTE_WRITTEN = "note_written"
+    QUESTION_ASKED = "question_asked"
+    KNOWLEDGE_VIEWED = "knowledge_viewed"
+    SEARCH_PERFORMED = "search_performed"
+
+
+class LearningEvent(BaseModel):
+    """A piece of evidence of learning (spec's Learning Philosophy).
+
+    V1 records these; interpreting them into confidence is future work.
+    """
+
+    id: str
+    kind: LearningEventKind
+    subject_type: str | None = None  # resource | knowledge_object | conversation
+    subject_id: str | None = None
+    detail: dict = Field(default_factory=dict)
+    created_at: str

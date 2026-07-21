@@ -2,7 +2,7 @@ import cytoscape from 'cytoscape'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
-import { TYPE_COLORS } from '../components/ui'
+import { TYPE_COLORS } from '../colors'
 import type { GraphOut } from '../types'
 
 export default function GraphPage() {
@@ -61,7 +61,14 @@ export default function GraphPage() {
           },
         },
       ],
-      layout: { name: 'cose', animate: false, padding: 40 },
+      layout: {
+        name: 'cose',
+        animate: false,
+        padding: 60,
+        idealEdgeLength: () => 140,
+        nodeRepulsion: () => 400000,
+        gravity: 0.25,
+      } as cytoscape.LayoutOptions,
     })
     cy.on('tap', 'node', (event) => navigate(`/knowledge/${event.target.id()}`))
     return () => cy.destroy()

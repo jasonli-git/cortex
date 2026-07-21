@@ -11,6 +11,8 @@ from pks.core.models import (
     KnowledgeObject,
     KnowledgeObjectType,
     KnowledgeObjectVersion,
+    LearningEvent,
+    LearningEventKind,
     Provenance,
     Relationship,
     Resource,
@@ -283,6 +285,11 @@ class SqliteProvenanceRepository:
             for row in rows
         ]
 
+    def update_chunk(self, prov_id: str, chunk_id: str | None) -> None:
+        self._conn.execute(
+            "UPDATE provenance SET chunk_id = ? WHERE id = ?", (chunk_id, prov_id)
+        )
+
     def list_for_knowledge_object(self, ko_id: str) -> list[Provenance]:
         return self._list("knowledge_object_id", ko_id)
 
@@ -507,6 +514,54 @@ class SqliteWorkspaceRepository:
         ]
 
 
+class SqliteLearningEventRepository:
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    def insert(self, event: LearningEvent) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO learning_events (id, kind, subject_type, subject_id, detail, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                event.id,
+                event.kind,
+                event.subject_type,
+                event.subject_id,
+                json.dumps(event.detail),
+                event.created_at,
+            ),
+        )
+
+    def list(
+        self, *, kind: LearningEventKind | None = None, limit: int = 100
+    ) -> list[LearningEvent]:
+        if kind is None:
+            rows = self._conn.execute(
+                "SELECT * FROM learning_events ORDER BY created_at DESC, id LIMIT ?", (limit,)
+            )
+        else:
+            rows = self._conn.execute(
+                """
+                SELECT * FROM learning_events WHERE kind = ?
+                ORDER BY created_at DESC, id LIMIT ?
+                """,
+                (kind, limit),
+            )
+        return [
+            LearningEvent(
+                id=row["id"],
+                kind=row["kind"],
+                subject_type=row["subject_type"],
+                subject_id=row["subject_id"],
+                detail=json.loads(row["detail"]),
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+
 class SqliteStore:
     """Bundles the SQLite repositories over one connection.
 
@@ -522,6 +577,7 @@ class SqliteStore:
         self.provenance = SqliteProvenanceRepository(self._conn)
         self.resources = SqliteResourceRepository(self._conn)
         self.workspaces = SqliteWorkspaceRepository(self._conn)
+        self.learning_events = SqliteLearningEventRepository(self._conn)
 
     @property
     def connection(self) -> sqlite3.Connection:

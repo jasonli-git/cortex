@@ -1,3 +1,4 @@
+import { TYPE_COLORS } from '../colors'
 import type { KnowledgeObjectType, ResourceStatus } from '../types'
 
 export function StatusBadge({ status }: { status: ResourceStatus }) {
@@ -12,15 +13,6 @@ export function StatusBadge({ status }: { status: ResourceStatus }) {
       {status}
     </span>
   )
-}
-
-export const TYPE_COLORS: Record<KnowledgeObjectType, string> = {
-  concept: '#0e7490',
-  person: '#b45309',
-  organization: '#6d28d9',
-  place: '#15803d',
-  event: '#be185d',
-  summary: '#57534e',
 }
 
 export function TypeBadge({ type }: { type: KnowledgeObjectType }) {

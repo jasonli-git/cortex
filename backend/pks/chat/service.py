@@ -92,6 +92,12 @@ class ChatService:
         history = self._chat.list_messages(conversation.id)
         user_message = new_message(conversation.id, MessageRole.USER, content)
         self._chat.add_message(user_message)
+        self._engine.record_learning_event(
+            "question_asked",
+            subject_type="conversation",
+            subject_id=conversation.id,
+            detail={"question": content[:200]},
+        )
 
         sources = self._retrieve(content, workspace_id=conversation.workspace_id)
         raw = self._provider.extract_structured(

@@ -6,6 +6,7 @@ import ChatPage from './pages/ChatPage'
 import GraphPage from './pages/GraphPage'
 import KnowledgePage from './pages/KnowledgePage'
 import LibraryPage from './pages/LibraryPage'
+import PipelinePage from './pages/PipelinePage'
 import SearchPage from './pages/SearchPage'
 import WorkspacesPage from './pages/WorkspacesPage'
 
@@ -15,6 +16,7 @@ const NAV = [
   { to: '/graph', label: 'Graph' },
   { to: '/chat', label: 'Chat' },
   { to: '/workspaces', label: 'Workspaces' },
+  { to: '/pipeline', label: 'Pipeline' },
 ]
 
 export default function App() {
@@ -64,6 +66,7 @@ export default function App() {
           <Route path="/knowledge/:id" element={<KnowledgePage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/workspaces" element={<WorkspacesPage />} />
+          <Route path="/pipeline" element={<PipelinePage />} />
         </Routes>
       </main>
     </div>

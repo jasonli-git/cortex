@@ -35,6 +35,9 @@ export interface Job {
   status: 'queued' | 'running' | 'done' | 'failed'
   attempts: number
   error: string | null
+  payload: Record<string, unknown>
+  created_at: string
+  updated_at: string
 }
 
 export interface ResourceStatusOut {

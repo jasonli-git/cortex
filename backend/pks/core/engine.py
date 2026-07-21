@@ -13,6 +13,8 @@ from pks.core.models import (
     KnowledgeObject,
     KnowledgeObjectType,
     KnowledgeObjectVersion,
+    LearningEvent,
+    LearningEventKind,
     Provenance,
     Relationship,
     Resource,
@@ -360,19 +362,24 @@ class KnowledgeEngine:
                 raise ValidationError(f"chunk {chunk_id!r} does not belong to {resource_id!r}")
 
         # Idempotent: an identical evidence link (e.g. from a retried pipeline
-        # stage) returns the existing row instead of duplicating it.
+        # stage) returns the existing row instead of duplicating it. A row with
+        # the same quote in the same resource is the same evidence even when
+        # the chunk id differs — reprocessing replaces chunks — so it is
+        # re-pointed at the new chunk rather than duplicated.
         existing = (
             self._store.provenance.list_for_knowledge_object(knowledge_object_id)
             if knowledge_object_id is not None
             else self._store.provenance.list_for_relationship(relationship_id)  # type: ignore[arg-type]
         )
         for prov in existing:
-            if (
-                prov.resource_id == resource_id
-                and prov.chunk_id == chunk_id
-                and prov.quote == quote
-            ):
+            if prov.resource_id != resource_id or prov.quote != quote:
+                continue
+            if prov.chunk_id == chunk_id:
                 return prov
+            if quote is not None:
+                with self._store.transaction():
+                    self._store.provenance.update_chunk(prov.id, chunk_id)
+                return prov.model_copy(update={"chunk_id": chunk_id})
 
         prov = Provenance(
             id=_new_id(),
@@ -405,6 +412,36 @@ class KnowledgeEngine:
     def knowledge_object_ids_for_resource(self, resource_id: str) -> list[str]:
         """Ids of knowledge objects that have evidence in the given resource."""
         return self._store.provenance.knowledge_object_ids_for_resource(resource_id)
+
+    # ------------------------------------------------------------------
+    # Learning evidence (recorded now, interpreted post-V1)
+    # ------------------------------------------------------------------
+
+    def record_learning_event(
+        self,
+        kind: LearningEventKind | str,
+        *,
+        subject_type: str | None = None,
+        subject_id: str | None = None,
+        detail: dict | None = None,
+    ) -> LearningEvent:
+        event = LearningEvent(
+            id=_new_id(),
+            kind=LearningEventKind(kind),
+            subject_type=subject_type,
+            subject_id=subject_id,
+            detail=detail or {},
+            created_at=utcnow(),
+        )
+        with self._store.transaction():
+            self._store.learning_events.insert(event)
+        return event
+
+    def list_learning_events(
+        self, *, kind: LearningEventKind | str | None = None, limit: int = 100
+    ) -> list[LearningEvent]:
+        event_kind = LearningEventKind(kind) if kind is not None else None
+        return self._store.learning_events.list(kind=event_kind, limit=limit)
 
     # ------------------------------------------------------------------
     # Resources (evidence)

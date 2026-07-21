@@ -117,10 +117,27 @@ resource.uploaded
 Heavy models run only in this pipeline ("expensive reasoning happens once");
 chat and search assistance use the fast tier.
 
-Concrete stage chain (V1): `parse → chunk → extract_knowledge → summarize → index`,
-with `index` (embeddings + FTS) marking the resource ready. Without an API key the
-extraction stages are absent and `index` follows `chunk` directly — parsing,
-chunking, and search all work AI-free.
+Concrete stage chain (V1): `parse → chunk → extract_knowledge → summarize → index →
+dedupe`, with `index` (embeddings + FTS) marking the resource ready and `dedupe`
+refining the graph afterwards. Without an API key the AI stages are absent and
+`index` follows `chunk` directly — parsing, chunking, and search all work AI-free.
+
+Resources can be **reprocessed** (`POST /api/resources/{id}/reprocess`): the pipeline
+re-runs from the stored original; chunks and indexes are rebuilt while knowledge and
+provenance stay stable (extraction merges by name/alias, and provenance rows keyed by
+(resource, quote) are re-pointed at the new chunks rather than duplicated). The global
+job queue is observable at `GET /api/jobs`.
+
+One known behavior: an ambiguous entity ("Rome" the city vs. the state) can be typed
+differently across runs, producing same-name siblings of different types. The dedup
+stage deliberately never merges across types; reconciling these is post-V1 work.
+
+## Learning evidence (groundwork)
+
+Per the spec's Learning Philosophy, V1 only *accumulates evidence*: `learning_events`
+records resource ingests, notes written, and questions asked (via
+`engine.record_learning_event`). The confidence model that interprets this evidence
+is future work.
 
 ## Search
 

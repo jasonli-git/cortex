@@ -4,6 +4,7 @@ import type {
   GraphOut,
   Health,
   IngestResult,
+  Job,
   KnowledgeObjectDetail,
   KnowledgeVersion,
   Message,
@@ -54,6 +55,9 @@ export const api = {
       '/api/resources/notes',
       json({ title, content, workspace_id: workspaceId ?? null }),
     ),
+  reprocess: (id: string) =>
+    request<Resource>(`/api/resources/${id}/reprocess`, { method: 'POST' }),
+  jobs: () => request<{ counts: Record<string, number>; jobs: Job[] }>('/api/jobs'),
 
   // Knowledge
   knowledgeDetail: (id: string) => request<KnowledgeObjectDetail>(`/api/knowledge/${id}`),
