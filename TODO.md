@@ -68,15 +68,26 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] Upload/note endpoints accept workspace_id (ingest straight into a workspace)
 - [x] Workspace scoping for chat retrieval and /api/search
 
-## Milestone 8 — Frontend (next, pending approval)
+## Milestone 8 — Frontend
 
-- [ ] Vite + React + TypeScript + Tailwind scaffold (needs Node)
-- [ ] Library: resources, upload with pipeline progress, notes
-- [ ] Search page (knowledge + passages)
-- [ ] Knowledge detail with provenance, relationships, history
-- [ ] Graph view (cytoscape)
-- [ ] Chat with PKS/model segment labels + citations; workspace selector
-- [ ] Workspaces management
+- [x] Vite + React + TypeScript + Tailwind scaffold (Node installed via brew)
+- [x] Library: resources, upload with pipeline progress, notes, chunk viewer
+- [x] Search page (knowledge + passages)
+- [x] Knowledge detail with provenance, relationships, history
+- [x] Graph view (cytoscape, click-through to detail)
+- [x] Chat with PKS/model segment labels + citations; workspace selector
+- [x] Workspaces management (create/delete, contents, detach)
+- Nits for M9: upload-into-workspace from the Library UI; graph layout spreads
+  small graphs tightly (cose params); TYPE_COLORS export triggers a fast-refresh
+  lint warning
+
+## Milestone 9 — Hardening (next, pending approval)
+
+- [ ] Resource reprocessing (re-run pipeline on an existing resource)
+- [ ] Pipeline observability (global jobs view)
+- [ ] Learning-evidence schema groundwork (spec's evidence model, schema only)
+- [ ] Docs polish (README setup instructions, ARCHITECTURE refresh)
+- [ ] Frontend nits from M8
 
 ## Parked / needs user input
 

@@ -42,3 +42,7 @@ All notable changes to AI PKS. Format loosely follows [Keep a Changelog](https:/
 - **Milestone 7** — workspaces: reference-only contexts over knowledge (CRUD, polymorphic
   attach/detach, hydrated detail); upload/notes straight into a workspace; workspace-
   scoped retrieval for chat and search (resources + knowledge extracted from them).
+- **Milestone 8** — React frontend (Vite + TypeScript + Tailwind): library with uploads,
+  notes, and live pipeline progress; hybrid search; knowledge detail with evidence and
+  history; cytoscape graph view; chat UI rendering PKS-cited vs model-knowledge segments
+  with citations; workspace management. Dev server proxies to the backend.
