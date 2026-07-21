@@ -81,13 +81,22 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
   small graphs tightly (cose params); TYPE_COLORS export triggers a fast-refresh
   lint warning
 
-## Milestone 9 — Hardening (next, pending approval)
+## Milestone 9 — Hardening
 
-- [ ] Resource reprocessing (re-run pipeline on an existing resource)
-- [ ] Pipeline observability (global jobs view)
-- [ ] Learning-evidence schema groundwork (spec's evidence model, schema only)
-- [ ] Docs polish (README setup instructions, ARCHITECTURE refresh)
-- [ ] Frontend nits from M8
+- [x] Resource reprocessing with stable knowledge/provenance
+- [x] Pipeline observability (GET /api/jobs + Pipeline page)
+- [x] Learning-evidence groundwork (migration 0006 + recorder, wired at intake/chat)
+- [x] Docs polish (README, ARCHITECTURE)
+- [x] Frontend nits from M8 (workspace-targeted upload, graph layout, lint)
+
+## V1 complete — post-V1 candidates
+
+See ROADMAP.md "Post-V1" plus:
+- Cross-type entity reconciliation (e.g. "Rome" typed place vs organization
+  across runs — dedup deliberately won't merge across types)
+- Heavy-tier chat mode or a grounding-verification pass (fast-tier citations
+  can occasionally misread their source)
+- Retry backoff for pipeline jobs; chunk overlap experiment for retrieval
 
 ## Parked / needs user input
 
