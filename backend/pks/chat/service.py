@@ -13,7 +13,9 @@ from pks.chat import prompts
 from pks.chat.models import ChatResult, Citation, Conversation, Message, MessageRole, Segment
 from pks.chat.store import ChatStore, new_message
 from pks.config import Settings
+from pks.core.engine import KnowledgeEngine
 from pks.core.errors import NotFoundError, ValidationError
+from pks.core.models import WorkspaceRefType
 from pks.core.store.sqlite import SqliteStore
 from pks.embeddings.base import EmbeddingProvider
 from pks.providers.base import CompletionProvider
@@ -33,6 +35,7 @@ class ChatService:
     ):
         self._chat = ChatStore(store)
         self._search = SearchService(store, embedder)
+        self._engine = KnowledgeEngine(store)
         self._provider = provider
         self._settings = settings
 
@@ -61,7 +64,13 @@ class ChatService:
     # Asking
     # ------------------------------------------------------------------
 
-    def ask(self, content: str, *, conversation_id: str | None = None) -> ChatResult:
+    def ask(
+        self,
+        content: str,
+        *,
+        conversation_id: str | None = None,
+        workspace_id: str | None = None,
+    ) -> ChatResult:
         if self._provider is None:
             raise ValidationError(
                 "chat requires an AI provider — set ANTHROPIC_API_KEY and restart"
@@ -71,8 +80,12 @@ class ChatService:
             raise ValidationError("message must not be empty")
 
         if conversation_id is None:
+            if workspace_id is not None:
+                self._engine.get_workspace(workspace_id)
             title = content[:_TITLE_CHARS] + ("…" if len(content) > _TITLE_CHARS else "")
-            conversation = self._chat.create_conversation(title=title)
+            conversation = self._chat.create_conversation(
+                title=title, workspace_id=workspace_id
+            )
         else:
             conversation = self.get_conversation(conversation_id)
 
@@ -80,7 +93,7 @@ class ChatService:
         user_message = new_message(conversation.id, MessageRole.USER, content)
         self._chat.add_message(user_message)
 
-        sources = self._retrieve(content)
+        sources = self._retrieve(content, workspace_id=conversation.workspace_id)
         raw = self._provider.extract_structured(
             prompt=prompts.chat_prompt(
                 self._render_sources(sources),
@@ -114,10 +127,37 @@ class ChatService:
     # Internals
     # ------------------------------------------------------------------
 
-    def _retrieve(self, query: str) -> list[Citation]:
-        """Hybrid retrieval, flattened into numbered candidate citations."""
+    def _retrieve(self, query: str, *, workspace_id: str | None = None) -> list[Citation]:
+        """Hybrid retrieval, flattened into numbered candidate citations.
+
+        In a workspace conversation, retrieval is scoped to the workspace's
+        referenced resources and the knowledge extracted from them (an empty
+        workspace falls back to unscoped retrieval).
+        """
+        resource_filter: set[str] | None = None
+        ko_filter: set[str] | None = None
+        if workspace_id is not None:
+            resource_ids = set(
+                self._engine.workspace_object_ids(workspace_id, WorkspaceRefType.RESOURCE)
+            )
+            ko_ids = set(
+                self._engine.workspace_object_ids(
+                    workspace_id, WorkspaceRefType.KNOWLEDGE_OBJECT
+                )
+            )
+            for resource_id in resource_ids:
+                ko_ids.update(self._engine.knowledge_object_ids_for_resource(resource_id))
+            if resource_ids or ko_ids:
+                resource_filter = resource_ids
+                ko_filter = ko_ids
+
         limit = max(self._settings.chat_context_chunks, self._settings.chat_context_objects)
-        result = self._search.search(query, limit=limit)
+        result = self._search.search(
+            query,
+            limit=limit,
+            resource_ids=resource_filter,
+            knowledge_object_ids=ko_filter,
+        )
         sources: list[Citation] = []
         for hit in result.chunks[: self._settings.chat_context_chunks]:
             sources.append(

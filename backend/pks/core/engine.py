@@ -21,6 +21,9 @@ from pks.core.models import (
     ResourceStatus,
     ResourceType,
     VersionOperation,
+    Workspace,
+    WorkspaceRef,
+    WorkspaceRefType,
 )
 from pks.core.store.db import utcnow
 from pks.core.store.interfaces import Store
@@ -470,6 +473,113 @@ class KnowledgeEngine:
         with self._store.transaction():
             self._store.resources.update(updated)
         return updated
+
+    # ------------------------------------------------------------------
+    # Workspaces (contexts referencing knowledge; never owning it)
+    # ------------------------------------------------------------------
+
+    def create_workspace(self, *, name: str, description: str = "") -> Workspace:
+        name = name.strip()
+        if not name:
+            raise ValidationError("workspace name must not be empty")
+        if self._store.workspaces.get_by_name(name) is not None:
+            raise ValidationError(f"workspace {name!r} already exists")
+        now = utcnow()
+        workspace = Workspace(
+            id=_new_id(), name=name, description=description, created_at=now, updated_at=now
+        )
+        with self._store.transaction():
+            self._store.workspaces.insert(workspace)
+        return workspace
+
+    def get_workspace(self, workspace_id: str) -> Workspace:
+        workspace = self._store.workspaces.get(workspace_id)
+        if workspace is None:
+            raise NotFoundError(f"workspace {workspace_id!r} not found")
+        return workspace
+
+    def list_workspaces(self) -> list[Workspace]:
+        return self._store.workspaces.list()
+
+    def update_workspace(
+        self, workspace_id: str, *, name: str | None = None, description: str | None = None
+    ) -> Workspace:
+        workspace = self.get_workspace(workspace_id)
+        if name is not None:
+            name = name.strip()
+            if not name:
+                raise ValidationError("workspace name must not be empty")
+            existing = self._store.workspaces.get_by_name(name)
+            if existing is not None and existing.id != workspace_id:
+                raise ValidationError(f"workspace {name!r} already exists")
+        updated = workspace.model_copy(
+            update={
+                "name": name if name is not None else workspace.name,
+                "description": description if description is not None else workspace.description,
+                "updated_at": utcnow(),
+            }
+        )
+        with self._store.transaction():
+            self._store.workspaces.update(updated)
+        return updated
+
+    def delete_workspace(self, workspace_id: str) -> None:
+        """Deletes the workspace and its references — never the knowledge itself."""
+        with self._store.transaction():
+            if not self._store.workspaces.delete(workspace_id):
+                raise NotFoundError(f"workspace {workspace_id!r} not found")
+
+    def attach_to_workspace(
+        self, workspace_id: str, object_type: WorkspaceRefType | str, object_id: str
+    ) -> WorkspaceRef:
+        """Reference an object from a workspace (idempotent).
+
+        Resources and knowledge objects are validated here; conversation refs
+        are validated by the API layer (the conversations table belongs to the
+        chat module).
+        """
+        self.get_workspace(workspace_id)
+        ref_type = WorkspaceRefType(object_type)
+        if ref_type is WorkspaceRefType.RESOURCE:
+            self.get_resource(object_id)
+        elif ref_type is WorkspaceRefType.KNOWLEDGE_OBJECT:
+            self.get_knowledge_object(object_id)
+        ref = WorkspaceRef(
+            workspace_id=workspace_id,
+            object_type=ref_type,
+            object_id=object_id,
+            created_at=utcnow(),
+        )
+        with self._store.transaction():
+            self._store.workspaces.add_ref(ref)
+        return ref
+
+    def detach_from_workspace(
+        self, workspace_id: str, object_type: WorkspaceRefType | str, object_id: str
+    ) -> None:
+        self.get_workspace(workspace_id)
+        with self._store.transaction():
+            removed = self._store.workspaces.remove_ref(
+                workspace_id, WorkspaceRefType(object_type), object_id
+            )
+        if not removed:
+            raise NotFoundError(
+                f"{object_type} {object_id!r} is not referenced by workspace {workspace_id!r}"
+            )
+
+    def get_workspace_refs(self, workspace_id: str) -> list[WorkspaceRef]:
+        self.get_workspace(workspace_id)
+        return self._store.workspaces.list_refs(workspace_id)
+
+    def workspace_object_ids(
+        self, workspace_id: str, object_type: WorkspaceRefType | str
+    ) -> list[str]:
+        wanted = WorkspaceRefType(object_type)
+        return [
+            ref.object_id
+            for ref in self.get_workspace_refs(workspace_id)
+            if ref.object_type is wanted
+        ]
 
     def set_chunks(
         self, resource_id: str, chunks: list[tuple[int, str, str | None, int | None]]

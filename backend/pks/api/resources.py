@@ -22,6 +22,7 @@ class NoteIn(BaseModel):
     title: str
     content: str
     relationship: ResourceRelationship = ResourceRelationship.REFERENCE
+    workspace_id: str | None = None  # reference the note from this workspace
 
 
 class ResourceStatusOut(BaseModel):
@@ -37,7 +38,10 @@ async def upload_resource(
     registry: RegistryDep,
     queue: QueueDep,
     relationship: Annotated[ResourceRelationship, Form()] = ResourceRelationship.REFERENCE,
+    workspace_id: Annotated[str | None, Form()] = None,
 ) -> IngestResult:
+    if workspace_id is not None:
+        engine.get_workspace(workspace_id)
     content = await file.read()
     resource, created = intake.save_upload(
         engine,
@@ -48,6 +52,8 @@ async def upload_resource(
         content=content,
         relationship=relationship,
     )
+    if workspace_id is not None:
+        engine.attach_to_workspace(workspace_id, "resource", resource.id)
     return IngestResult(resource=resource, created=created)
 
 
@@ -59,6 +65,8 @@ def create_note(
     registry: RegistryDep,
     queue: QueueDep,
 ) -> IngestResult:
+    if note.workspace_id is not None:
+        engine.get_workspace(note.workspace_id)
     resource, created = intake.create_note(
         engine,
         settings,
@@ -68,6 +76,8 @@ def create_note(
         content=note.content,
         relationship=note.relationship,
     )
+    if note.workspace_id is not None:
+        engine.attach_to_workspace(note.workspace_id, "resource", resource.id)
     return IngestResult(resource=resource, created=created)
 
 

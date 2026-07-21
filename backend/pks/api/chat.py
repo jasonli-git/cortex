@@ -26,6 +26,7 @@ ServiceDep = Annotated[ChatService, Depends(get_chat_service)]
 class ChatIn(BaseModel):
     content: str
     conversation_id: str | None = None  # omitted: start a new conversation
+    workspace_id: str | None = None  # new conversations only: scope retrieval
 
 
 class ConversationDetail(BaseModel):
@@ -35,7 +36,11 @@ class ConversationDetail(BaseModel):
 
 @router.post("", response_model=ChatResult)
 def chat(body: ChatIn, service: ServiceDep) -> ChatResult:
-    return service.ask(body.content, conversation_id=body.conversation_id)
+    return service.ask(
+        body.content,
+        conversation_id=body.conversation_id,
+        workspace_id=body.workspace_id,
+    )
 
 
 @router.get("/conversations", response_model=list[Conversation])

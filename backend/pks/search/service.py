@@ -36,7 +36,16 @@ class SearchService:
         self._fts = FtsIndex(store)
         self._embedder = embedder
 
-    def search(self, query: str, *, limit: int = 10) -> SearchResponse:
+    def search(
+        self,
+        query: str,
+        *,
+        limit: int = 10,
+        resource_ids: set[str] | None = None,
+        knowledge_object_ids: set[str] | None = None,
+    ) -> SearchResponse:
+        """Hybrid search; optional scoping to specific resources / objects
+        (used for workspace-scoped retrieval). None means unscoped."""
         query = query.strip()
         if not query:
             return SearchResponse(query=query, knowledge=[], chunks=[])
@@ -59,17 +68,23 @@ class SearchService:
         ko_keyword = self._fts.search_knowledge_objects(query, top_n=CANDIDATES)
         chunk_keyword = self._fts.search_chunks(query, top_n=CANDIDATES)
 
-        knowledge = self._hydrate_knowledge(rrf_fuse([ko_semantic, ko_keyword]), limit)
-        chunks = self._hydrate_chunks(rrf_fuse([chunk_semantic, chunk_keyword]), limit)
+        knowledge = self._hydrate_knowledge(
+            rrf_fuse([ko_semantic, ko_keyword]), limit, knowledge_object_ids
+        )
+        chunks = self._hydrate_chunks(
+            rrf_fuse([chunk_semantic, chunk_keyword]), limit, resource_ids
+        )
         return SearchResponse(query=query, knowledge=knowledge, chunks=chunks)
 
     def _hydrate_knowledge(
-        self, ranked: list[tuple[str, float]], limit: int
+        self, ranked: list[tuple[str, float]], limit: int, allowed: set[str] | None
     ) -> list[KnowledgeHit]:
         hits: list[KnowledgeHit] = []
         for ko_id, score in ranked:
             if len(hits) >= limit:
                 break
+            if allowed is not None and ko_id not in allowed:
+                continue
             try:
                 ko = self._engine.get_knowledge_object(ko_id)
             except NotFoundError:
@@ -77,7 +92,9 @@ class SearchService:
             hits.append(KnowledgeHit(score=score, object=ko))
         return hits
 
-    def _hydrate_chunks(self, ranked: list[tuple[str, float]], limit: int) -> list[ChunkHit]:
+    def _hydrate_chunks(
+        self, ranked: list[tuple[str, float]], limit: int, allowed_resources: set[str] | None
+    ) -> list[ChunkHit]:
         titles: dict[str, str] = {}
         hits: list[ChunkHit] = []
         for chunk_id, score in ranked:
@@ -86,6 +103,8 @@ class SearchService:
             chunk = self._store.resources.get_chunk(chunk_id)
             if chunk is None:
                 continue  # stale index entry
+            if allowed_resources is not None and chunk.resource_id not in allowed_resources:
+                continue
             if chunk.resource_id not in titles:
                 try:
                     titles[chunk.resource_id] = self._engine.get_resource(chunk.resource_id).title

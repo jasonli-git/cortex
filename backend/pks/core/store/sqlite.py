@@ -15,6 +15,9 @@ from pks.core.models import (
     Relationship,
     Resource,
     ResourceChunk,
+    Workspace,
+    WorkspaceRef,
+    WorkspaceRefType,
 )
 from pks.core.store import db
 
@@ -411,6 +414,99 @@ class SqliteResourceRepository:
         )
 
 
+class SqliteWorkspaceRepository:
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    @staticmethod
+    def _to_model(row: sqlite3.Row) -> Workspace:
+        return Workspace(
+            id=row["id"],
+            name=row["name"],
+            description=row["description"],
+            created_at=row["created_at"],
+            updated_at=row["updated_at"],
+        )
+
+    def insert(self, workspace: Workspace) -> None:
+        self._conn.execute(
+            """
+            INSERT INTO workspaces (id, name, description, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                workspace.id,
+                workspace.name,
+                workspace.description,
+                workspace.created_at,
+                workspace.updated_at,
+            ),
+        )
+
+    def get(self, workspace_id: str) -> Workspace | None:
+        row = self._conn.execute(
+            "SELECT * FROM workspaces WHERE id = ?", (workspace_id,)
+        ).fetchone()
+        return self._to_model(row) if row else None
+
+    def get_by_name(self, name: str) -> Workspace | None:
+        row = self._conn.execute(
+            "SELECT * FROM workspaces WHERE name = ?", (name,)
+        ).fetchone()
+        return self._to_model(row) if row else None
+
+    def list(self) -> list[Workspace]:
+        rows = self._conn.execute("SELECT * FROM workspaces ORDER BY name")
+        return [self._to_model(row) for row in rows]
+
+    def update(self, workspace: Workspace) -> None:
+        self._conn.execute(
+            "UPDATE workspaces SET name = ?, description = ?, updated_at = ? WHERE id = ?",
+            (workspace.name, workspace.description, workspace.updated_at, workspace.id),
+        )
+
+    def delete(self, workspace_id: str) -> bool:
+        cur = self._conn.execute("DELETE FROM workspaces WHERE id = ?", (workspace_id,))
+        return cur.rowcount > 0
+
+    def add_ref(self, ref: WorkspaceRef) -> None:
+        self._conn.execute(
+            """
+            INSERT OR IGNORE INTO workspace_refs
+                (workspace_id, object_type, object_id, created_at)
+            VALUES (?, ?, ?, ?)
+            """,
+            (ref.workspace_id, ref.object_type, ref.object_id, ref.created_at),
+        )
+
+    def remove_ref(
+        self, workspace_id: str, object_type: WorkspaceRefType, object_id: str
+    ) -> bool:
+        cur = self._conn.execute(
+            """
+            DELETE FROM workspace_refs
+            WHERE workspace_id = ? AND object_type = ? AND object_id = ?
+            """,
+            (workspace_id, object_type, object_id),
+        )
+        return cur.rowcount > 0
+
+    def list_refs(self, workspace_id: str) -> list[WorkspaceRef]:
+        rows = self._conn.execute(
+            "SELECT * FROM workspace_refs WHERE workspace_id = ? ORDER BY created_at",
+            (workspace_id,),
+        )
+        return [
+            WorkspaceRef(
+                workspace_id=row["workspace_id"],
+                object_type=row["object_type"],
+                object_id=row["object_id"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+
 class SqliteStore:
     """Bundles the SQLite repositories over one connection.
 
@@ -425,6 +521,7 @@ class SqliteStore:
         self.relationships = SqliteRelationshipRepository(self._conn)
         self.provenance = SqliteProvenanceRepository(self._conn)
         self.resources = SqliteResourceRepository(self._conn)
+        self.workspaces = SqliteWorkspaceRepository(self._conn)
 
     @property
     def connection(self) -> sqlite3.Connection:

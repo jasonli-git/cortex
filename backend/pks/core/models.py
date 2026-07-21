@@ -130,3 +130,26 @@ class ResourceChunk(BaseModel):
     structure_path: str | None = None
     text: str
     token_count: int | None = None
+
+
+class WorkspaceRefType(StrEnum):
+    RESOURCE = "resource"
+    KNOWLEDGE_OBJECT = "knowledge_object"
+    CONVERSATION = "conversation"
+
+
+class Workspace(BaseModel):
+    """A context in which knowledge is used. References knowledge; never owns it."""
+
+    id: str
+    name: str
+    description: str = ""
+    created_at: str
+    updated_at: str
+
+
+class WorkspaceRef(BaseModel):
+    workspace_id: str
+    object_type: WorkspaceRefType
+    object_id: str
+    created_at: str
