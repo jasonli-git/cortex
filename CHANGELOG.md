@@ -39,3 +39,6 @@ All notable changes to AI PKS. Format loosely follows [Keep a Changelog](https:/
   answers structured as segments labeled PKS (validated, numbered citations with
   excerpts) or model knowledge, with unbacked PKS claims downgraded; persisted
   conversations with history windowing; `/api/chat` + conversation management.
+- **Milestone 7** — workspaces: reference-only contexts over knowledge (CRUD, polymorphic
+  attach/detach, hydrated detail); upload/notes straight into a workspace; workspace-
+  scoped retrieval for chat and search (resources + knowledge extracted from them).

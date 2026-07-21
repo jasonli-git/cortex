@@ -61,12 +61,22 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
   its source. Citations make this checkable; consider a heavy-tier chat option or
   a verification pass post-V1.
 
-## Milestone 7 — Workspaces + notes (next, pending approval)
+## Milestone 7 — Workspaces + notes
 
-- [ ] Workspaces table (migration) + engine/API CRUD
-- [ ] Workspace refs: attach/detach resources, knowledge objects, conversations
-- [ ] Notes already ingest via /api/resources/notes — wire into workspace flow
-- [ ] Optional workspace scoping for chat retrieval
+- [x] Workspaces table (migration 0005) + engine/API CRUD
+- [x] Workspace refs: attach/detach resources, knowledge objects, conversations
+- [x] Upload/note endpoints accept workspace_id (ingest straight into a workspace)
+- [x] Workspace scoping for chat retrieval and /api/search
+
+## Milestone 8 — Frontend (next, pending approval)
+
+- [ ] Vite + React + TypeScript + Tailwind scaffold (needs Node)
+- [ ] Library: resources, upload with pipeline progress, notes
+- [ ] Search page (knowledge + passages)
+- [ ] Knowledge detail with provenance, relationships, history
+- [ ] Graph view (cytoscape)
+- [ ] Chat with PKS/model segment labels + citations; workspace selector
+- [ ] Workspaces management
 
 ## Parked / needs user input
 
