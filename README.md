@@ -38,7 +38,34 @@ See [SPEC.md](SPEC.md) for the full product specification and
 
 ## Screenshots
 
-*(run it — Library, Search, Graph, Chat, Workspaces, Pipeline)*
+*Screens below show a real economics textbook (PDF) ingested end to end.*
+
+**Library** — uploaded resources with live ingestion status. Selecting one reveals its
+pipeline stages and structure-aware chunks.
+
+![Library](screenshots/library.png)
+
+**Knowledge graph** — everything extracted from one textbook: 500 knowledge objects and
+385 relationships, color-coded by type.
+
+![Knowledge graph, full view](screenshots/graph-large.png)
+
+Zoomed in, the extracted structure is legible — people, events, concepts, and
+organizations joined by typed relationships such as `signed_into_law`, `lobbied_for`,
+and `triggered_by_dispute_over`.
+
+![Knowledge graph, zoomed in](screenshots/graph-small.png)
+
+**Knowledge object** — clicking a node opens its detail: aliases, typed relationships
+with confidence scores, verbatim evidence quotes traced back to the source document, and
+full revision history.
+
+![Knowledge object detail](screenshots/node-inspect.png)
+
+**Pipeline** — job queue observability: per-status counts and every stage of each
+ingestion run (`parse → chunk → extract_knowledge → summarize → index → dedupe`).
+
+![Pipeline](screenshots/pipeline.png)
 
 ## Setup Instructions
 
