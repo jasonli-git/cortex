@@ -40,7 +40,9 @@
       "Bash(sed -i '' 's/<title>frontend<\\\\/title>/<title>AI PKS<\\\\/title>/' index.html)",
       "Bash(npm run *)",
       "Bash(git commit -m 'Mark Milestone 8 complete in project docs *)",
-      "Bash(curl -s http://127.0.0.1:8000/api/knowledge)"
+      "Bash(curl -s http://127.0.0.1:8000/api/knowledge)",
+      "Bash(file screenshots/*)",
+      "Bash(git commit -m 'Add screenshots to README *)"
     ]
   }
 }
