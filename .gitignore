@@ -1,5 +1,5 @@
 .DS_Store
-docs/specification.md
+docs:specification.md
 
 # Python
 __pycache__/
