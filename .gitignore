@@ -1,5 +1,4 @@
 .DS_Store
-docs:specification
 
 # Python
 __pycache__/
