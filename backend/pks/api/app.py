@@ -47,7 +47,7 @@ def create_app(
         finally:
             worker.stop()
 
-    app = FastAPI(title="AI PKS", version=__version__, lifespan=lifespan)
+    app = FastAPI(title="Cortex", version=__version__, lifespan=lifespan)
     app.state.settings = settings
     app.state.registry = registry
     app.state.embedder = embedder

@@ -1,9 +1,9 @@
-# AI Personal Knowledge System
+# Cortex — AI Personal Knowledge System
 
 ## Project Description
 
-A local-first, AI-powered personal knowledge system: upload documents and write
-notes, and the system automatically turns them into structured, interconnected
+Cortex is a local-first, AI-powered personal knowledge system: upload documents
+and write notes, and Cortex automatically turns them into structured, interconnected
 knowledge — concepts, people, places, events, summaries — with quote-level
 provenance back to the sources. Search it semantically, browse it as a graph,
 and chat with it: every answer labels which claims come from *your* knowledge
@@ -23,7 +23,7 @@ See [SPEC.md](SPEC.md) for the full product specification and
 - **Knowledge graph** — typed relationships with confidence, LLM-confirmed
   duplicate merging, revision history on every object.
 - **Chat with provenance** — fast-model RAG; answers are segments labeled
-  PKS-backed (numbered citations) or general model knowledge.
+  Cortex-backed (numbered citations) or general model knowledge.
 - **Workspaces** — contexts that reference knowledge without owning it; scope
   chat and search to a workspace.
 - Works without an API key too: parsing, chunking, and search stay functional

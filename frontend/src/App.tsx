@@ -29,8 +29,8 @@ export default function App() {
     <div className="flex min-h-screen">
       <aside className="flex w-52 shrink-0 flex-col border-r border-stone-200 bg-white px-4 py-6">
         <div className="mb-8">
-          <div className="text-lg font-bold">AI PKS</div>
-          <div className="text-xs text-stone-500">personal knowledge system</div>
+          <div className="text-lg font-bold">Cortex</div>
+          <div className="text-xs text-stone-500">AI personal knowledge system</div>
         </div>
         <nav className="flex flex-col gap-1">
           {NAV.map(({ to, label }) => (

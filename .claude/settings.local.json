@@ -42,7 +42,12 @@
       "Bash(git commit -m 'Mark Milestone 8 complete in project docs *)",
       "Bash(curl -s http://127.0.0.1:8000/api/knowledge)",
       "Bash(file screenshots/*)",
-      "Bash(git commit -m 'Add screenshots to README *)"
+      "Bash(git commit -m 'Add screenshots to README *)",
+      "Bash(sed -i '' 's|<title>AI PKS</title>|<title>Cortex</title>|' frontend/index.html)",
+      "Bash(sed -i '' 's|<div className=\"text-lg font-bold\">AI PKS</div>|<div className=\"text-lg font-bold\">Cortex</div>|; s|<div className=\"text-xs text-stone-500\">personal knowledge system</div>|<div className=\"text-xs text-stone-500\">AI personal knowledge system</div>|' frontend/src/App.tsx)",
+      "Bash(sed -i '' 's|title=\"AI PKS\"|title=\"Cortex\"|' backend/pks/api/app.py)",
+      "Bash(sed -i '' 's|description = \"AI Personal Knowledge System — backend\"|description = \"Cortex — AI Personal Knowledge System backend\"|' backend/pyproject.toml)",
+      "Bash(sed -i '' 's|\"\"\"AI Personal Knowledge System — backend package.\"\"\"|\"\"\"Cortex — AI Personal Knowledge System backend package.\"\"\"|' backend/pks/__init__.py)"
     ]
   }
 }

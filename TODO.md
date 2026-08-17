@@ -1,4 +1,4 @@
-# AI PKS — TODO
+# Cortex — TODO
 
 Working list for the current milestone. Longer-horizon items live in [ROADMAP.md](ROADMAP.md).
 
@@ -54,7 +54,7 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 ## Milestone 6 — Chat with provenance
 
 - [x] RAG chat service on the fast tier using hybrid search retrieval
-- [x] Per-segment source labels: PKS (validated citations) vs. model knowledge
+- [x] Per-segment source labels: Cortex (validated citations) vs. model knowledge
 - [x] Conversations/messages persistence (migration 0004) + API
 - [x] Conversation context window management (recent turns)
 - Note: fast-tier (Haiku) grounding is imperfect — a cited claim can still misread
@@ -75,7 +75,7 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] Search page (knowledge + passages)
 - [x] Knowledge detail with provenance, relationships, history
 - [x] Graph view (cytoscape, click-through to detail)
-- [x] Chat with PKS/model segment labels + citations; workspace selector
+- [x] Chat with Cortex/model segment labels + citations; workspace selector
 - [x] Workspaces management (create/delete, contents, detach)
 - Nits for M9: upload-into-workspace from the Library UI; graph layout spreads
   small graphs tightly (cose params); TYPE_COLORS export triggers a fast-refresh

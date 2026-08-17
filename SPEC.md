@@ -1,15 +1,15 @@
-# AI PKS Specifications
+# Cortex Specifications
 ## Product Specification v1.0
 
 ### Vision
 
-Build a modular AI-powered Personal Knowledge System (PKS) that functions as a user’s long-term knowledge operating system.
+Build Cortex, a modular AI-powered Personal Knowledge System that functions as a user’s long-term knowledge operating system.
 
 The purpose of the application is not to replace ChatGPT, Claude, or future frontier models. Instead, it exists to organize, preserve, connect, and retrieve a user’s accumulated knowledge across years of learning, projects, work, and personal interests.
 
 The system should transform unstructured information—including documents, books, notes, conversations, code snippets, websites, and future knowledge sources—into structured, interconnected knowledge that can be searched, explored, reasoned over, and expanded by AI.
 
-The PKS should prioritize long-term knowledge accumulation rather than short-term question answering.
+Cortex should prioritize long-term knowledge accumulation rather than short-term question answering.
 
 The application should be designed as a platform rather than a single-purpose application, allowing future AI assistants and modules to build upon the same knowledge layer without requiring architectural changes.
 
@@ -87,7 +87,7 @@ Users should organize only when they want additional control.
 
 #### 6. AI providers are infrastructure, not the product.
 
-The value of the PKS should not depend on whether it uses GPT-5.5, Claude, Gemini, or a local model.
+The value of Cortex should not depend on whether it uses GPT-5.5, Claude, Gemini, or a local model.
 
 The AI should be replaceable.
 
@@ -97,7 +97,7 @@ The knowledge layer is the product.
 
 Every AI-generated response should clearly distinguish between:
 
-* knowledge retrieved from the user’s PKS
+* knowledge retrieved from the user’s Cortex knowledge base
 * general model knowledge
 * external sources (future capability)
 
@@ -325,13 +325,13 @@ This separation improves both cost and responsiveness.
 
 Future AI assistants should consume knowledge from the Core Knowledge Engine rather than maintaining separate memory systems.
 
-The PKS should become the shared intelligence layer for future applications.
+Cortex should become the shared intelligence layer for future applications.
 
 ---
 
 ### Long-Term Product Direction
 
-The PKS should not attempt to become every AI application.
+Cortex should not attempt to become every AI application.
 
 Instead, it should become the foundational knowledge platform upon which future specialized assistants can operate. In other words, the objective is to build the best possible knowledge engine.
 
@@ -380,11 +380,11 @@ The previous draft blurred uploaded files and the knowledge extracted from them.
 
 The new version explicitly states that resources are inputs and evidence, while knowledge is the structured representation created from those inputs.
 
-**Reason:** This better reflects the core purpose of the PKS and keeps the architecture flexible.
+**Reason:** This better reflects the core purpose of Cortex and keeps the architecture flexible.
 
 #### 3. Added a dedicated Learning Philosophy
 
-Instead of claiming the PKS knows what a user understands, the specification now frames learning as evidence-based confidence.
+Instead of claiming Cortex knows what a user understands, the specification now frames learning as evidence-based confidence.
 
 **Reason:** This is both more realistic and more technically achievable. It avoids overpromising while leaving room for future educational features.
 
@@ -392,7 +392,7 @@ Instead of claiming the PKS knows what a user understands, the specification now
 
 The architecture now clearly identifies a single foundational component that stores, indexes, and relates knowledge, with all other capabilities acting as modular services around it.
 
-**Reason:** This reinforces the long-term goal of making the PKS the shared knowledge layer for future AI applications.
+**Reason:** This reinforces the long-term goal of making Cortex the shared knowledge layer for future AI applications.
 
 #### 5. Added explicit Version 1 non-goals
 

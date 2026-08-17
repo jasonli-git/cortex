@@ -1,6 +1,6 @@
-# AI PKS — Architecture
+# Cortex — Architecture
 
-This document describes the system architecture for the AI Personal Knowledge System (PKS).
+This document describes the system architecture for Cortex, an AI Personal Knowledge System.
 The product specification lives in [SPEC.md](SPEC.md) and is the source of truth for *what*
 the system does; this document records *how* it is built and *why*.
 
@@ -94,7 +94,7 @@ Key properties encoded by the schema:
   object and relationship back to the evidence (resource + chunk + quote).
 - **Workspaces reference, never own** — `workspace_refs` is a pure overlay.
 - **Versioning** — `ko_versions` snapshots each prior state of a knowledge object.
-- **Transparency** — chat citations distinguish PKS knowledge from model knowledge.
+- **Transparency** — chat citations distinguish Cortex knowledge from model knowledge.
 
 ## Ingestion Pipeline
 
@@ -161,5 +161,5 @@ not triggers); stale entries for deleted objects are skipped at query time.
 - `EmbeddingProvider` interface. Default: local sentence-transformers model.
 - All extraction uses structured outputs (JSON-schema-constrained) so pipeline
   stages receive validated data, not prose.
-- Every chat answer labels each claim's origin: user's PKS (with citations) vs.
+- Every chat answer labels each claim's origin: the user's Cortex knowledge (with citations) vs.
   general model knowledge (spec principle 7).
