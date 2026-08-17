@@ -35,7 +35,7 @@ repository interfaces and all AI calls sit behind provider interfaces.
 ## Module Layout
 
 ```
-ai-pks/
+cortex/
 ├── backend/
 │   ├── pks/
 │   │   ├── core/            # CORE KNOWLEDGE ENGINE — the product
