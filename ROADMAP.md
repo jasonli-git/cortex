@@ -23,5 +23,7 @@ tests, a live demo, updated docs, and user review.
 - EPUB / web page (URL) / DOCX parsers; OCR for scanned PDFs
 - Learning analytics: evidence-based confidence model
 - Additional AI providers (OpenAI, local via Ollama); Voyage embeddings
+- Resource usage capture — RAM, CPU, and storage recorded per pipeline stage and job,
+  surfaced in the pipeline observability UI
 - Desktop packaging (Tauri) and/or hosted deployment (Postgres + auth)
 - Assistant platform API: external assistants consuming the Core Knowledge Engine
