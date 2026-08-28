@@ -2,6 +2,8 @@
 name = "pks"
 version = "0.1.0"
 description = "Cortex — AI Personal Knowledge System backend"
+license = "AGPL-3.0-or-later"
+authors = [{ name = "Jason Li" }]
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

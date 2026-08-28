@@ -92,3 +92,17 @@ V1 complete — all nine milestones (scaffolding → core knowledge engine →
 pipeline → AI extraction → search → dedup/graph → chat → workspaces →
 frontend → hardening). See [ROADMAP.md](ROADMAP.md) and
 [CHANGELOG.md](CHANGELOG.md).
+
+## Contributing
+
+Cortex is a personal project and does **not accept outside pull requests** — sole
+copyright is deliberate, so that relicensing stays possible. Bug reports and questions
+are welcome via issues. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+Copyright © 2026 Jason Li.
+
+Cortex is licensed under the **GNU Affero General Public License v3.0 or later**
+([LICENSE](LICENSE)). In particular, if you run a modified version of Cortex as a
+network service, AGPL §13 requires you to offer its source to that service's users.
