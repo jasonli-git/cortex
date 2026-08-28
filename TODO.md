@@ -89,14 +89,66 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] Docs polish (README, ARCHITECTURE)
 - [x] Frontend nits from M8 (workspace-targeted upload, graph layout, lint)
 
-## V1 complete — post-V1 candidates
+## Milestone 10 — Tutor loop  ← current
 
-See ROADMAP.md "Post-V1" plus:
-- Cross-type entity reconciliation (e.g. "Rome" typed place vs organization
-  across runs — dedup deliberately won't merge across types)
-- Heavy-tier chat mode or a grounding-verification pass (fast-tier citations
-  can occasionally misread their source)
-- Retry backoff for pipeline jobs; chunk overlap experiment for retrieval
+Thesis and rationale: [ROADMAP.md](ROADMAP.md) "V2 — Interactive Learning".
+
+### Schema (migration 0007)
+
+- [ ] `study_sessions` — conversation/workspace/resource refs, mode, focus concept,
+      started/ended, carry-forward summary
+- [ ] `understanding_events` — append-only evidence: concept, kind
+      (recalled/applied/explained/missed/hinted/confused), outcome 0..1, difficulty,
+      evidence chunk, detail JSON
+- [ ] `understanding_state` — derived cache (confidence, evidence_count, last_seen_at,
+      due_at, computed_from). Must be safe to DELETE and rebuild from events
+- [ ] Domain models + repositories + engine API, mirroring the existing
+      provenance/versioning patterns
+- [ ] Leave `learning_events` (0006) alone — it stays the *activity* log
+
+### Tutor service (`pks/tutor/`)
+
+- [ ] Module composes ChatService + KnowledgeEngine + SearchService (dependency rule:
+      modules import `core.engine`, never each other)
+- [ ] **Teach** — tutor opens; one explanation step grounded in the focus concept's
+      chunks, then a checking question; reply scored → recalled/missed
+- [ ] **Quiz** — question drawn from a specific chunk, verdict graded against that same
+      chunk; records applied/missed with `evidence_chunk_id`
+- [ ] **Explain back** — learner explains, tutor grades on a rubric (accuracy /
+      completeness / own-words) naming the missing piece with a citation; records
+      `explained` + rubric. Highest-signal mode; must refuse a fluent wrong answer
+- [ ] Extend `CHAT_SCHEMA` with an `assessment` block — keep the existing
+      segment/citation contract so unbacked `pks` segments still downgrade to `model`
+- [ ] Session summary written at session end, injected into the next session's prefix
+
+### Model tier
+
+- [ ] `fast_model` → `claude-sonnet-5` (rationale: M6 note below — Haiku mis-grounding
+      is a citation defect in a knowledge tool and a teaching-something-false defect
+      in a tutor). Heavy tier unchanged
+- [ ] Confirm no prompt regressions in existing chat after the tier change
+
+### Frontend
+
+- [ ] Study view: mode switcher, focus-concept selector, session transcript
+- [ ] Assessment feedback rendered inline (verdict + the chunk it was graded against)
+
+### Exit criterion (not optional)
+
+- [ ] Two weeks of the author's own use against the ingested economics textbook,
+      answering: *is talking to my material meaningfully better than reading it?*
+      M13 and everything past it stay unscheduled until this is a yes.
+
+## Deferred into later V2 milestones
+
+- M11: confidence estimator, `prerequisite_of` extraction, weak-spot traversal,
+  spaced review, "why does Cortex think I know this?" panel
+- M12: per-turn token/cost logging, prompt caching on the session prefix, grounding
+  eval across tiers — this absorbs the old "heavy-tier chat mode or grounding
+  verification pass" candidate
+- M13 (gated): EPUB parser, OCR, Gemini provider
+
+Longer-horizon and parked items: [ROADMAP.md](ROADMAP.md) "Parked".
 
 ## Parked / needs user input
 
