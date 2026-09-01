@@ -89,66 +89,83 @@ Working list for the current milestone. Longer-horizon items live in [ROADMAP.md
 - [x] Docs polish (README, ARCHITECTURE)
 - [x] Frontend nits from M8 (workspace-targeted upload, graph layout, lint)
 
-## Milestone 10 — Tutor loop  ← current
+## Milestone 10 — Practice loop  ← current
 
-Thesis and rationale: [ROADMAP.md](ROADMAP.md) "V2 — Interactive Learning".
+Thesis, scope rationale, and design constraints: [ROADMAP.md](ROADMAP.md) "V1.5 —
+Practice & Diagnosis".
 
 ### Schema (migration 0007)
 
-- [ ] `study_sessions` — conversation/workspace/resource refs, mode, focus concept,
-      started/ended, carry-forward summary
-- [ ] `understanding_events` — append-only evidence: concept, kind
-      (recalled/applied/explained/missed/hinted/confused), outcome 0..1, difficulty,
-      evidence chunk, detail JSON
-- [ ] `understanding_state` — derived cache (confidence, evidence_count, last_seen_at,
-      due_at, computed_from). Must be safe to DELETE and rebuild from events
-- [ ] Domain models + repositories + engine API, mirroring the existing
+- [ ] `practice_sessions` — conversation / workspace / resource refs, mode
+      (quiz | explain), focus concept, started_at, ended_at
+- [ ] `practice_attempts` — the corpus M12 depends on. One row per graded exchange:
+      session, knowledge object, mode, the **question asked**, the learner's
+      **full answer text** (not a boolean), the verdict, and the
+      `evidence_chunk_id` it was graded against
+- [ ] Domain models + repositories + engine API, mirroring existing
       provenance/versioning patterns
 - [ ] Leave `learning_events` (0006) alone — it stays the *activity* log
+- [ ] No `understanding_state` table. Confidence modelling is explicitly out of scope
 
-### Tutor service (`pks/tutor/`)
+### Practice service (`pks/tutor/`)
 
-- [ ] Module composes ChatService + KnowledgeEngine + SearchService (dependency rule:
-      modules import `core.engine`, never each other)
-- [ ] **Teach** — tutor opens; one explanation step grounded in the focus concept's
-      chunks, then a checking question; reply scored → recalled/missed
-- [ ] **Quiz** — question drawn from a specific chunk, verdict graded against that same
-      chunk; records applied/missed with `evidence_chunk_id`
-- [ ] **Explain back** — learner explains, tutor grades on a rubric (accuracy /
-      completeness / own-words) naming the missing piece with a citation; records
-      `explained` + rubric. Highest-signal mode; must refuse a fluent wrong answer
-- [ ] Extend `CHAT_SCHEMA` with an `assessment` block — keep the existing
+- [ ] Module composes ChatService + KnowledgeEngine + SearchService (dependency
+      rule: modules import `core.engine`, never each other)
+- [ ] **Quiz** — question drawn from a specific chunk; verdict graded against that
+      same chunk; stores question, answer, verdict, evidence chunk
+- [ ] **Explain back** — learner explains a concept; graded on a short rubric
+      (accuracy / completeness / own words) naming the missing piece with a
+      citation. Must refuse a fluent wrong answer
+- [ ] No "teach me" mode — cut deliberately, see ROADMAP
+- [ ] Extend `CHAT_SCHEMA` with an `assessment` block; keep the existing
       segment/citation contract so unbacked `pks` segments still downgrade to `model`
-- [ ] Session summary written at session end, injected into the next session's prefix
 
 ### Model tier
 
-- [ ] `fast_model` → `claude-sonnet-5` (rationale: M6 note below — Haiku mis-grounding
-      is a citation defect in a knowledge tool and a teaching-something-false defect
-      in a tutor). Heavy tier unchanged
-- [ ] Confirm no prompt regressions in existing chat after the tier change
+- [ ] `fast_model` → `claude-sonnet-5` (rationale: M6 note above). Heavy tier unchanged
+- [ ] Confirm no regressions in existing chat after the tier change
 
-### Frontend
+### Frontend (minimal — real UI work is M11)
 
-- [ ] Study view: mode switcher, focus-concept selector, session transcript
-- [ ] Assessment feedback rendered inline (verdict + the chunk it was graded against)
+- [ ] Practice view: mode switcher, focus-concept selector, session transcript
+- [ ] Verdict rendered inline with the passage it was graded against
 
-### Exit criterion (not optional)
+### Chore
 
-- [ ] Two weeks of the author's own use against the ingested economics textbook,
-      answering: *is talking to my material meaningfully better than reading it?*
-      M13 and everything past it stay unscheduled until this is a yes.
+- [ ] CI workflow running `uv run pytest` (99 tests currently unproven publicly)
 
-## Deferred into later V2 milestones
+### Success gate
 
-- M11: confidence estimator, `prerequisite_of` extraction, weak-spot traversal,
-  spaced review, "why does Cortex think I know this?" panel
-- M12: per-turn token/cost logging, prompt caching on the session prefix, grounding
-  eval across tiers — this absorbs the old "heavy-tier chat mode or grounding
-  verification pass" candidate
-- M13 (gated): EPUB parser, OCR, Gemini provider
+- [ ] Two weeks of the author's own use, **with ChatGPT + the same textbook as the
+      control condition**. Measure 7-day retention and adherence (did returning
+      require force?)
+- [ ] Confirm enough real error data accumulated to attempt M12's clustering
 
-Longer-horizon and parked items: [ROADMAP.md](ROADMAP.md) "Parked".
+## Milestone 11 — UI revamp
+
+- [ ] Reading-first typography; material centered rather than sidebarred
+- [ ] One deliberate typeface pairing and palette; intentional dark mode
+- [ ] Task-organized navigation (study first; graph, pipeline, history reachable
+      but not competing for primary attention)
+- [ ] Target: the screenshot reads as a study tool with no caption
+
+Kept as first-class pages per user decision: **Workspaces** (name unchanged) and
+**Pipeline observability**.
+
+## Milestone 12 — Misconception detection  (gated on M10)
+
+- [ ] Embed `practice_attempts` answer text into the existing vector index
+- [ ] Cluster attempts into candidate misconceptions across unrelated topics
+- [ ] Surface a pattern only with the specific supporting instances; below
+      threshold, show nothing
+- [ ] No mastery percentages anywhere in the UI
+
+## Milestone 13 — Material coverage
+
+- [ ] EPUB parser
+- [ ] OCR for scanned PDFs
+
+Longer-horizon, declined, and parked items: [ROADMAP.md](ROADMAP.md).
 
 ## Parked / needs user input
 
