@@ -13,7 +13,12 @@ Cortex should prioritize long-term knowledge accumulation rather than short-term
 
 The application should be designed as a platform rather than a single-purpose application, allowing future AI assistants and modules to build upon the same knowledge layer without requiring architectural changes.
 
-For the current version, Cortex should be **a small, polished personal knowledge system that is pleasant to explore and inexpensive to use.** Its core workflow is:
+For the current version, Cortex should be **a small, polished knowledge system that is pleasant to explore and inexpensive to use.** It serves two uses of the same engine:
+
+* **Personal knowledge** — one person's accumulated material, explored through search, the graph, and chat.
+* **Document assistant** — a team's policies, handbooks, and procedures, answered for people who ask the same questions repeatedly (for example, new hires asking onboarding questions that staff would otherwise answer by email).
+
+The document assistant is the primary demonstration of Cortex. Its core workflow is the same:
 
 ```
 Material → ingestion → structured knowledge → search / graph exploration → grounded AI interaction
@@ -111,6 +116,8 @@ Every AI-generated response should clearly distinguish between:
 
 Users should always understand where information originated.
 
+In the document assistant, answers must come from the documents only. When the documents do not answer a question, the assistant should say so plainly and point to who can answer it, rather than filling the gap from general model knowledge.
+
 #### 8. Expensive reasoning should happen once.
 
 Complex AI processing should occur primarily during ingestion.
@@ -163,6 +170,7 @@ The primary interactions should be:
 * chat with accumulated knowledge
 * browse relationships
 * manage workspaces
+* ask a question through a single, simple assistant page
 
 Users should never feel required to manually organize every piece of information.
 
@@ -247,6 +255,12 @@ The primary value proposition is knowledge accumulation rather than document ret
 Answers that depend on the user's material should clearly reference that material.
 
 Every AI-generated claim drawn from Cortex should link back to the specific source passage it came from, and that link should survive reprocessing and de-duplication.
+
+When a document is replaced by a newer version, answers should come from the current version, and cited sources should show which version and effective date they came from. Answers given against an older version should be identifiable as such.
+
+Questions the documents could not answer should be recorded and grouped, so the owner of the documents can see which repeated questions still need a written answer.
+
+Answer quality should be measured, not asserted: a fixed set of realistic questions, with expected answers and sources — including questions the documents deliberately do not answer — should score accuracy, citation faithfulness, and correct refusal.
 
 Cortex does not model what a user understands. Tutoring, quizzes, mastery scoring, and learner models are out of scope (see Non-Goals).
 
@@ -383,6 +397,7 @@ Version 2 should not attempt to add:
 * additional document formats solely for feature breadth
 * continuous or autonomous ingestion
 * expensive always-on AI functionality
+* user accounts, logins, or per-user permissions — the assistant page runs without authentication for demonstration
 
 These may remain in archived plans or documentation but should not drive development.
 
@@ -401,6 +416,7 @@ Cortex is complete when:
 * obsolete roadmap functionality has been removed or explicitly archived
 * documentation accurately reflects the final product
 * the project can be demonstrated end-to-end without significant ongoing maintenance
+* the document assistant is demonstrated on a clearly fictional organization's handbook, with published evaluation results
 
 ---
 
@@ -429,6 +445,12 @@ Principle 10 makes low, predictable cost a requirement — achieved by doing les
 #### 4. Added Version 2 non-goals and completion criteria
 
 **Reason:** A defined finish line keeps the remaining work bounded.
+
+#### 5. Added the document assistant as the primary demonstration
+
+Cortex now also serves a team's policy documents: documents-only answers with refusal, document versions, a report of unanswered questions, a measured evaluation set, and a simple assistant page.
+
+**Reason:** Cortex demonstrates building custom internal knowledge assistants for organizations, a common and concrete need.
 
 ---
 

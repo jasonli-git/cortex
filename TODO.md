@@ -23,7 +23,7 @@ planned. Nothing started on M14 yet; begin on a `milestone/m14-cleanup` branch.
 
 ## Open
 
-### M15 — Cost visibility
+### M15 — Cost visibility + evaluation
 
 - [ ] Provider returns token usage (input, output, cache read, cache write) alongside
       every result; `AnthropicProvider` reads it from `response.usage`
@@ -32,8 +32,17 @@ planned. Nothing started on M14 yet; begin on a `milestone/m14-cleanup` branch.
 - [ ] Per-model price table in config; estimated USD computed at read time, not stored
 - [ ] Cost per resource and per pipeline stage on the Pipeline page and resource
       detail; cost per chat message available in the API
-- [ ] Reference corpus (3–5 representative documents + a fixed chat question set)
-      committed or documented, with baseline cost and quality recorded
+- [ ] Demo corpus: a clearly fictional therapy clinic's handbook (onboarding, records
+      system, supervision, time off, documentation deadlines, crisis procedures, billing
+      basics), committed as the reference corpus alongside 1–2 personal-use documents
+- [ ] Question set: 30–50 realistic new-hire questions with expected answer and source
+      section, including questions the handbook deliberately does not answer
+- [ ] Evaluation runner scoring accuracy, citation faithfulness (does the cited passage
+      support the claim), and correct refusal; results written to a report file
+- [ ] Unanswered-question log: every answer with no grounded segment is recorded;
+      a gap report groups similar questions by embedding and counts repeats
+- [ ] Top-asked questions and cost per question visible to the document owner
+- [ ] Baseline cost and question-set scores recorded
 - [ ] Model candidate evaluation on the reference corpus, per tier: current
       `claude-opus-4-8` (heavy) and `claude-haiku-4-5` (fast) vs. newer Opus models and
       other candidates; pick per-stage models on quality first, cost second. The
@@ -61,7 +70,15 @@ planned. Nothing started on M14 yet; begin on a `milestone/m14-cleanup` branch.
   its source. The M15 model evaluation must score chat candidates on citation
   faithfulness, not just answer quality.
 
-### M17 — Reliability
+### M17 — Reliability + trustworthy answers
+
+- [ ] Documents-only answer mode (per workspace): `model` segments are not allowed; when
+      retrieval does not support an answer, reply that the documents don't cover it and
+      name the contact configured for that workspace or document
+- [ ] Document versions: re-uploading a document with the same title in a workspace
+      supersedes the old version; retrieval uses the current version only; citations
+      show version and effective date; unchanged chunks reuse cached extraction (M16)
+- [ ] Past answers that cite a superseded version are flagged in the UI
 
 - [ ] Retry backoff for pipeline jobs (currently immediate retries)
 - [ ] Provider and pipeline failures show a user-readable reason on the resource and
@@ -72,6 +89,9 @@ planned. Nothing started on M14 yet; begin on a `milestone/m14-cleanup` branch.
       existing chunk after reprocessing and merges
 
 ### M18 — UI polish
+
+- [ ] Standalone assistant page: one question box, cited answers, citation click opens
+      the source passage; no library/graph/pipeline chrome. The primary demo surface
 
 - [ ] Navigation and information hierarchy reworked around Library, Search, Graph, Chat;
       Workspaces and Pipeline reachable but secondary
@@ -84,7 +104,10 @@ planned. Nothing started on M14 yet; begin on a `milestone/m14-cleanup` branch.
 
 ### M19 — Completion
 
-- [ ] Scripted end-to-end demo: upload → pipeline → search → graph → grounded chat
+- [ ] Scripted end-to-end demo on the fictional clinic handbook: upload → assistant page
+      answers with citations → an unanswered question → gap report → policy re-upload
+      changes the answer
+- [ ] Evaluation results published in README
 - [ ] Screenshots refreshed in `screenshots/`
 - [ ] README, ARCHITECTURE, and supported-formats/AI-pipeline docs match the final code
 

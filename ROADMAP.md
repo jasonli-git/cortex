@@ -40,17 +40,18 @@ tier. A model change is allowed only when measured output quality holds.
 | M | Status | Deliverable |
 |---|--------|-------------|
 | 14 | ⬜ planned | **Cleanup** — remove learning-evidence code (`learning_events`, recorder, call sites), archive V1.5 plan in ARCHITECTURE, CI running the test suite |
-| 15 | ⬜ planned | **Cost visibility** — per-call token + cost capture (incl. cache reads/writes) persisted per stage, resource, and chat message; costs shown on Pipeline and resource pages; baseline measured on a fixed reference corpus |
+| 15 | ⬜ planned | **Cost visibility + evaluation** — per-call token + cost capture (incl. cache reads/writes) per stage, resource, and chat message; fictional-clinic handbook corpus with a scored question set (accuracy, citation faithfulness, correct refusal); unanswered-question log and gap report; model candidate evaluation sets the baseline |
 | 16 | ⬜ planned | **Cost reduction, quality held** — prompt caching, single full-text pass for extraction + summary, extraction cache for unchanged chunks on reprocess, batched dedup confirmations, opt-in Message Batches ingestion, trimmed prompts/context; gated on a before/after quality check against the M15 baseline |
-| 17 | ⬜ planned | **Reliability** — retry backoff, consistent error surfaces, simplified config, consolidated duplicate logic, provenance integrity checks |
-| 18 | ⬜ planned | **UI polish** — navigation and hierarchy, visual consistency, empty/loading/error/processing states, readable graph, responsive layout |
-| 19 | ⬜ planned | **Completion** — end-to-end demo script, refreshed screenshots, docs reflect the final product |
+| 17 | ⬜ planned | **Reliability + trustworthy answers** — documents-only answer mode with refusal and contact pointers; document versions with effective dates (re-upload replaces, answers cite current version); retry backoff, readable errors, simplified config, consolidated logic, provenance integrity checks |
+| 18 | ⬜ planned | **UI polish** — standalone assistant page (one question box, cited answers) as the primary surface; navigation and hierarchy, visual consistency, empty/loading/error/processing states, readable graph, responsive layout |
+| 19 | ⬜ planned | **Completion** — end-to-end demo on the fictional clinic handbook, published evaluation results in README, refreshed screenshots, docs reflect the final product |
 
 ### M16 success gate
 
-Measured on the M15 reference corpus: ingestion cost per document and chat cost per
-message drop materially from baseline, while extraction output (object and relationship
-counts, spot-checked provenance quotes) and chat citation accuracy do not regress.
+Measured on the M15 corpus and question set: ingestion cost per document and chat cost
+per message drop materially from baseline, while extraction output (object and
+relationship counts, spot-checked provenance quotes) and the question-set scores
+(accuracy, citation faithfulness, correct refusal) do not regress.
 Anything that saves money but fails the quality check is reverted.
 
 ---
@@ -60,7 +61,8 @@ Anything that saves money but fails the quality check is reverted.
 Tutoring modes · quizzes · explain-back · mastery or confidence scoring · learner
 models · prerequisite tracking · spaced repetition · automated study plans ·
 continuous or autonomous ingestion · always-on AI features · new document formats
-added only for breadth · course libraries · multi-user · cloud deployment ·
+added only for breadth · course libraries · user accounts and per-user permissions ·
+cloud deployment ·
 subscriptions · downgrading model tiers purely to save money
 
 These are declined, not pending. Re-proposing one should require new evidence.
@@ -73,3 +75,4 @@ These are declined, not pending. Re-proposing one should require new evidence.
 - **Cross-type entity reconciliation** — e.g. "Rome" typed place vs. organization;
   dedup deliberately will not merge across types.
 - **Chunk overlap experiment** for retrieval.
+- **Slack integration** for the document assistant — where staff actually ask questions.
