@@ -4,6 +4,8 @@ All notable changes to Cortex. Format loosely follows [Keep a Changelog](https:/
 
 ## [Unreleased]
 
+M14 merged 2026-09-30.
+
 ### Added
 - **Milestone 14** — cleanup: GitHub Actions CI running backend ruff lint, format
   check, and pytest (98 tests), plus frontend oxlint and build, on pushes to `main`

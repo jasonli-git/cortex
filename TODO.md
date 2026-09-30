@@ -4,10 +4,10 @@ Open work only. Shipped detail lives in [CHANGELOG.md](CHANGELOG.md), decisions 
 limitations in [ARCHITECTURE.md](ARCHITECTURE.md), milestone status in
 [ROADMAP.md](ROADMAP.md).
 
-## Now — M14 in review, as of 2026-09-30
+## Now — M15 Cost visibility + evaluation, as of 2026-09-30
 
-M14 (cleanup) is complete on `milestone/m14-cleanup` and awaiting review and merge.
-Next is M15; don't start it until M14 is merged.
+M14 merged 2026-09-30. M15 is next; not started. Begin on a
+`milestone/m15-cost-evaluation` branch. Its tasks are listed under Open → M15.
 
 ## Open
 
