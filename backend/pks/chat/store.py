@@ -37,9 +37,7 @@ class ChatStore:
     def __init__(self, store: SqliteStore):
         self._conn = store.connection
 
-    def create_conversation(
-        self, *, title: str, workspace_id: str | None = None
-    ) -> Conversation:
+    def create_conversation(self, *, title: str, workspace_id: str | None = None) -> Conversation:
         now = utcnow()
         conversation = Conversation(
             id=uuid4().hex,
@@ -76,9 +74,7 @@ class ChatStore:
 
     def delete_conversation(self, conversation_id: str) -> bool:
         with self._conn:
-            cur = self._conn.execute(
-                "DELETE FROM conversations WHERE id = ?", (conversation_id,)
-            )
+            cur = self._conn.execute("DELETE FROM conversations WHERE id = ?", (conversation_id,))
         return cur.rowcount > 0
 
     def touch_conversation(self, conversation_id: str) -> None:

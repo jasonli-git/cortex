@@ -13,8 +13,6 @@ from pks.core.models import (
     KnowledgeObject,
     KnowledgeObjectType,
     KnowledgeObjectVersion,
-    LearningEvent,
-    LearningEventKind,
     Provenance,
     Relationship,
     Resource,
@@ -56,13 +54,6 @@ class ProvenanceRepository(Protocol):
     def knowledge_object_ids_for_resource(self, resource_id: str) -> list[str]: ...
 
 
-class LearningEventRepository(Protocol):
-    def insert(self, event: LearningEvent) -> None: ...
-    def list(
-        self, *, kind: LearningEventKind | None = None, limit: int = 100
-    ) -> list[LearningEvent]: ...
-
-
 class ResourceRepository(Protocol):
     def insert(self, resource: Resource) -> None: ...
     def get(self, resource_id: str) -> Resource | None: ...
@@ -94,7 +85,6 @@ class Store(Protocol):
     provenance: ProvenanceRepository
     resources: ResourceRepository
     workspaces: WorkspaceRepository
-    learning_events: LearningEventRepository
 
     def transaction(self) -> AbstractContextManager[None]: ...
     def close(self) -> None: ...

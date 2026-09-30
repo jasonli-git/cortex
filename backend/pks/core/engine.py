@@ -13,8 +13,6 @@ from pks.core.models import (
     KnowledgeObject,
     KnowledgeObjectType,
     KnowledgeObjectVersion,
-    LearningEvent,
-    LearningEventKind,
     Provenance,
     Relationship,
     Resource,
@@ -102,9 +100,7 @@ class KnowledgeEngine:
         updated = ko.model_copy(update=dict(changes))
         if not updated.name.strip():
             raise ValidationError("knowledge object name must not be empty")
-        updated = updated.model_copy(
-            update={"version": ko.version + 1, "updated_at": utcnow()}
-        )
+        updated = updated.model_copy(update={"version": ko.version + 1, "updated_at": utcnow()})
         with self._store.transaction():
             self._store.knowledge_objects.update(updated)
             self._record_version(updated, VersionOperation.UPDATED, changed_by)
@@ -257,9 +253,7 @@ class KnowledgeEngine:
         target = self.get_knowledge_object(target_id)
         source = self.get_knowledge_object(source_id)
         if target.type != source.type:
-            raise ValidationError(
-                f"cannot merge across types ({source.type} into {target.type})"
-            )
+            raise ValidationError(f"cannot merge across types ({source.type} into {target.type})")
 
         known = {a.lower() for a in (target.name, *target.aliases)}
         merged_aliases = list(target.aliases)
@@ -412,36 +406,6 @@ class KnowledgeEngine:
     def knowledge_object_ids_for_resource(self, resource_id: str) -> list[str]:
         """Ids of knowledge objects that have evidence in the given resource."""
         return self._store.provenance.knowledge_object_ids_for_resource(resource_id)
-
-    # ------------------------------------------------------------------
-    # Learning evidence (recorded now, interpreted post-V1)
-    # ------------------------------------------------------------------
-
-    def record_learning_event(
-        self,
-        kind: LearningEventKind | str,
-        *,
-        subject_type: str | None = None,
-        subject_id: str | None = None,
-        detail: dict | None = None,
-    ) -> LearningEvent:
-        event = LearningEvent(
-            id=_new_id(),
-            kind=LearningEventKind(kind),
-            subject_type=subject_type,
-            subject_id=subject_id,
-            detail=detail or {},
-            created_at=utcnow(),
-        )
-        with self._store.transaction():
-            self._store.learning_events.insert(event)
-        return event
-
-    def list_learning_events(
-        self, *, kind: LearningEventKind | str | None = None, limit: int = 100
-    ) -> list[LearningEvent]:
-        event_kind = LearningEventKind(kind) if kind is not None else None
-        return self._store.learning_events.list(kind=event_kind, limit=limit)
 
     # ------------------------------------------------------------------
     # Resources (evidence)

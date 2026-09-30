@@ -99,9 +99,7 @@ class EmbeddingIndex:
         if not rows:
             return []
 
-        matrix = np.stack(
-            [np.frombuffer(row["vector"], dtype=np.float32) for row in rows]
-        )
+        matrix = np.stack([np.frombuffer(row["vector"], dtype=np.float32) for row in rows])
         query = np.asarray(query_vector, dtype=np.float32)
 
         # Cosine similarity (vectors may or may not be pre-normalized).

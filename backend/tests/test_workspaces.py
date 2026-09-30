@@ -230,9 +230,7 @@ def test_workspace_api_end_to_end(tmp_path):
 
         # Detach, then delete the workspace; the resource must survive.
         assert (
-            client.delete(
-                f"/api/workspaces/{ws['id']}/refs/resource/{note['id']}"
-            ).status_code
+            client.delete(f"/api/workspaces/{ws['id']}/refs/resource/{note['id']}").status_code
             == 204
         )
         assert client.delete(f"/api/workspaces/{ws['id']}").status_code == 204

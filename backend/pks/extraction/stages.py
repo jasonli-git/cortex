@@ -96,9 +96,7 @@ class _Applier:
         self.entities_applied = 0
         self.relations_applied = 0
 
-    def apply(
-        self, entities: list[ExtractedEntity], relations: list[ExtractedRelation]
-    ) -> None:
+    def apply(self, entities: list[ExtractedEntity], relations: list[ExtractedRelation]) -> None:
         name_to_id: dict[str, str] = {}
         for entity in entities:
             ko = self._upsert_entity(entity)
@@ -139,9 +137,7 @@ class _Applier:
             changes["description"] = entity.description
         known = {a.lower() for a in (existing.name, *existing.aliases)}
         new_aliases = [
-            alias
-            for alias in (entity.name, *entity.aliases)
-            if alias.lower() not in known
+            alias for alias in (entity.name, *entity.aliases) if alias.lower() not in known
         ]
         if new_aliases:
             changes["aliases"] = [*existing.aliases, *new_aliases]

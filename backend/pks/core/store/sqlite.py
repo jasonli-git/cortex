@@ -11,8 +11,6 @@ from pks.core.models import (
     KnowledgeObject,
     KnowledgeObjectType,
     KnowledgeObjectVersion,
-    LearningEvent,
-    LearningEventKind,
     Provenance,
     Relationship,
     Resource,
@@ -220,9 +218,7 @@ class SqliteRelationshipRepository:
         return _row_to_relationship(row)
 
     def get(self, rel_id: str) -> Relationship | None:
-        row = self._conn.execute(
-            "SELECT * FROM relationships WHERE id = ?", (rel_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT * FROM relationships WHERE id = ?", (rel_id,)).fetchone()
         return _row_to_relationship(row) if row else None
 
     def delete(self, rel_id: str) -> bool:
@@ -286,9 +282,7 @@ class SqliteProvenanceRepository:
         ]
 
     def update_chunk(self, prov_id: str, chunk_id: str | None) -> None:
-        self._conn.execute(
-            "UPDATE provenance SET chunk_id = ? WHERE id = ?", (chunk_id, prov_id)
-        )
+        self._conn.execute("UPDATE provenance SET chunk_id = ? WHERE id = ?", (chunk_id, prov_id))
 
     def list_for_knowledge_object(self, ko_id: str) -> list[Provenance]:
         return self._list("knowledge_object_id", ko_id)
@@ -335,9 +329,7 @@ class SqliteResourceRepository:
         )
 
     def get(self, resource_id: str) -> Resource | None:
-        row = self._conn.execute(
-            "SELECT * FROM resources WHERE id = ?", (resource_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT * FROM resources WHERE id = ?", (resource_id,)).fetchone()
         return _row_to_resource(row) if row else None
 
     def get_by_hash(self, content_hash: str) -> Resource | None:
@@ -373,9 +365,7 @@ class SqliteResourceRepository:
         )
 
     def replace_chunks(self, resource_id: str, chunks: list[ResourceChunk]) -> None:
-        self._conn.execute(
-            "DELETE FROM resource_chunks WHERE resource_id = ?", (resource_id,)
-        )
+        self._conn.execute("DELETE FROM resource_chunks WHERE resource_id = ?", (resource_id,))
         self._conn.executemany(
             """
             INSERT INTO resource_chunks
@@ -457,9 +447,7 @@ class SqliteWorkspaceRepository:
         return self._to_model(row) if row else None
 
     def get_by_name(self, name: str) -> Workspace | None:
-        row = self._conn.execute(
-            "SELECT * FROM workspaces WHERE name = ?", (name,)
-        ).fetchone()
+        row = self._conn.execute("SELECT * FROM workspaces WHERE name = ?", (name,)).fetchone()
         return self._to_model(row) if row else None
 
     def list(self) -> list[Workspace]:
@@ -486,9 +474,7 @@ class SqliteWorkspaceRepository:
             (ref.workspace_id, ref.object_type, ref.object_id, ref.created_at),
         )
 
-    def remove_ref(
-        self, workspace_id: str, object_type: WorkspaceRefType, object_id: str
-    ) -> bool:
+    def remove_ref(self, workspace_id: str, object_type: WorkspaceRefType, object_id: str) -> bool:
         cur = self._conn.execute(
             """
             DELETE FROM workspace_refs
@@ -514,54 +500,6 @@ class SqliteWorkspaceRepository:
         ]
 
 
-class SqliteLearningEventRepository:
-    def __init__(self, conn: sqlite3.Connection):
-        self._conn = conn
-
-    def insert(self, event: LearningEvent) -> None:
-        self._conn.execute(
-            """
-            INSERT INTO learning_events (id, kind, subject_type, subject_id, detail, created_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (
-                event.id,
-                event.kind,
-                event.subject_type,
-                event.subject_id,
-                json.dumps(event.detail),
-                event.created_at,
-            ),
-        )
-
-    def list(
-        self, *, kind: LearningEventKind | None = None, limit: int = 100
-    ) -> list[LearningEvent]:
-        if kind is None:
-            rows = self._conn.execute(
-                "SELECT * FROM learning_events ORDER BY created_at DESC, id LIMIT ?", (limit,)
-            )
-        else:
-            rows = self._conn.execute(
-                """
-                SELECT * FROM learning_events WHERE kind = ?
-                ORDER BY created_at DESC, id LIMIT ?
-                """,
-                (kind, limit),
-            )
-        return [
-            LearningEvent(
-                id=row["id"],
-                kind=row["kind"],
-                subject_type=row["subject_type"],
-                subject_id=row["subject_id"],
-                detail=json.loads(row["detail"]),
-                created_at=row["created_at"],
-            )
-            for row in rows
-        ]
-
-
 class SqliteStore:
     """Bundles the SQLite repositories over one connection.
 
@@ -577,7 +515,6 @@ class SqliteStore:
         self.provenance = SqliteProvenanceRepository(self._conn)
         self.resources = SqliteResourceRepository(self._conn)
         self.workspaces = SqliteWorkspaceRepository(self._conn)
-        self.learning_events = SqliteLearningEventRepository(self._conn)
 
     @property
     def connection(self) -> sqlite3.Connection:

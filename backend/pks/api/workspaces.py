@@ -90,12 +90,8 @@ def get_workspace(
 
 
 @router.patch("/{workspace_id}", response_model=Workspace)
-def update_workspace(
-    workspace_id: str, body: WorkspacePatch, engine: EngineDep
-) -> Workspace:
-    return engine.update_workspace(
-        workspace_id, name=body.name, description=body.description
-    )
+def update_workspace(workspace_id: str, body: WorkspacePatch, engine: EngineDep) -> Workspace:
+    return engine.update_workspace(workspace_id, name=body.name, description=body.description)
 
 
 @router.delete("/{workspace_id}", status_code=204)
