@@ -115,9 +115,7 @@ class JobQueue:
         sql = f"SELECT * FROM jobs ORDER BY created_at {order}, id"  # noqa: S608
         params: list[object] = []
         if status is not None:
-            sql = (
-                f"SELECT * FROM jobs WHERE status = ? ORDER BY created_at {order}, id"  # noqa: S608
-            )
+            sql = f"SELECT * FROM jobs WHERE status = ? ORDER BY created_at {order}, id"  # noqa: S608
             params.append(status)
         if limit is not None:
             sql += " LIMIT ?"

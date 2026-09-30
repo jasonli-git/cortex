@@ -100,9 +100,7 @@ class KnowledgeEngine:
         updated = ko.model_copy(update=dict(changes))
         if not updated.name.strip():
             raise ValidationError("knowledge object name must not be empty")
-        updated = updated.model_copy(
-            update={"version": ko.version + 1, "updated_at": utcnow()}
-        )
+        updated = updated.model_copy(update={"version": ko.version + 1, "updated_at": utcnow()})
         with self._store.transaction():
             self._store.knowledge_objects.update(updated)
             self._record_version(updated, VersionOperation.UPDATED, changed_by)
@@ -255,9 +253,7 @@ class KnowledgeEngine:
         target = self.get_knowledge_object(target_id)
         source = self.get_knowledge_object(source_id)
         if target.type != source.type:
-            raise ValidationError(
-                f"cannot merge across types ({source.type} into {target.type})"
-            )
+            raise ValidationError(f"cannot merge across types ({source.type} into {target.type})")
 
         known = {a.lower() for a in (target.name, *target.aliases)}
         merged_aliases = list(target.aliases)

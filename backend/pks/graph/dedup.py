@@ -96,17 +96,13 @@ def register_stages(
                     continue
 
                 # The older object is the established one; it absorbs the newer.
-                target, source = (
-                    (ko, other) if ko.created_at <= other.created_at else (other, ko)
-                )
+                target, source = (ko, other) if ko.created_at <= other.created_at else (other, ko)
                 merged = ctx.engine.merge_knowledge_objects(
                     target.id, source.id, changed_by="dedup"
                 )
                 merged_away.add(source.id)
                 merges += 1
-                logger.info(
-                    "merged %r into %r (similarity %.3f)", source.name, target.name, score
-                )
+                logger.info("merged %r into %r (similarity %.3f)", source.name, target.name, score)
 
                 # Refresh the target's index entries; drop the source's.
                 vectors.delete("knowledge_object", source.id)
@@ -129,9 +125,7 @@ def register_stages(
         ctx.emit("resource.deduped", {"resource_id": resource.id})
 
 
-def _confirm_same(
-    provider: CompletionProvider, a: KnowledgeObject, b: KnowledgeObject
-) -> bool:
+def _confirm_same(provider: CompletionProvider, a: KnowledgeObject, b: KnowledgeObject) -> bool:
     verdict = provider.extract_structured(
         prompt=dedup_prompt(a, b),
         schema=DEDUP_SCHEMA,

@@ -313,9 +313,7 @@ def test_dedupe_cleans_stale_index_entries(tmp_path, store):
         "usa.txt",
         USA_DOC,
     )
-    confirm = FakeProvider(
-        extraction=DUP_EXTRACTION, dedup={"same_entity": True, "reason": "same"}
-    )
+    confirm = FakeProvider(extraction=DUP_EXTRACTION, dedup={"same_entity": True, "reason": "same"})
     ingest(settings, store, build_pipeline(confirm, embedder), "dup.txt", DUP_DOC)
 
     engine = KnowledgeEngine(store)

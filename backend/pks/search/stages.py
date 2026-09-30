@@ -33,9 +33,7 @@ def _hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def register_stages(
-    registry: PipelineRegistry, embedder: EmbeddingProvider, *, on: str
-) -> None:
+def register_stages(registry: PipelineRegistry, embedder: EmbeddingProvider, *, on: str) -> None:
     @registry.stage("index", on=on)
     def index(ctx: StageContext, payload: dict) -> None:
         resource = ctx.engine.get_resource(payload["resource_id"])

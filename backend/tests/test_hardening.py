@@ -45,9 +45,9 @@ def wait_ready(client: TestClient, resource_id: str, timeout: float = 15.0) -> d
 
 
 def test_reprocess_rebuilds_without_duplicating_knowledge(settings, client):
-    resource = client.post(
-        "/api/resources/upload", files={"file": ("rome.md", ROME_MD)}
-    ).json()["resource"]
+    resource = client.post("/api/resources/upload", files={"file": ("rome.md", ROME_MD)}).json()[
+        "resource"
+    ]
     assert wait_ready(client, resource["id"])["status"] == "ready"
 
     store = SqliteStore(settings.db_path)
@@ -76,9 +76,9 @@ def test_reprocess_rebuilds_without_duplicating_knowledge(settings, client):
 
 
 def test_reprocess_requires_original_file(settings, client):
-    resource = client.post(
-        "/api/resources/upload", files={"file": ("rome.md", ROME_MD)}
-    ).json()["resource"]
+    resource = client.post("/api/resources/upload", files={"file": ("rome.md", ROME_MD)}).json()[
+        "resource"
+    ]
     assert wait_ready(client, resource["id"])["status"] == "ready"
 
     original = settings.resources_dir / resource["path"]
@@ -94,9 +94,9 @@ def test_reprocess_requires_original_file(settings, client):
 
 
 def test_jobs_endpoint_reports_counts_and_recent_jobs(client):
-    resource = client.post(
-        "/api/resources/upload", files={"file": ("rome.md", ROME_MD)}
-    ).json()["resource"]
+    resource = client.post("/api/resources/upload", files={"file": ("rome.md", ROME_MD)}).json()[
+        "resource"
+    ]
     wait_ready(client, resource["id"])
 
     body = client.get("/api/jobs").json()

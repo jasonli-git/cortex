@@ -83,9 +83,7 @@ class ChatService:
             if workspace_id is not None:
                 self._engine.get_workspace(workspace_id)
             title = content[:_TITLE_CHARS] + ("…" if len(content) > _TITLE_CHARS else "")
-            conversation = self._chat.create_conversation(
-                title=title, workspace_id=workspace_id
-            )
+            conversation = self._chat.create_conversation(title=title, workspace_id=workspace_id)
         else:
             conversation = self.get_conversation(conversation_id)
 
@@ -141,9 +139,7 @@ class ChatService:
                 self._engine.workspace_object_ids(workspace_id, WorkspaceRefType.RESOURCE)
             )
             ko_ids = set(
-                self._engine.workspace_object_ids(
-                    workspace_id, WorkspaceRefType.KNOWLEDGE_OBJECT
-                )
+                self._engine.workspace_object_ids(workspace_id, WorkspaceRefType.KNOWLEDGE_OBJECT)
             )
             for resource_id in resource_ids:
                 ko_ids.update(self._engine.knowledge_object_ids_for_resource(resource_id))
@@ -189,7 +185,7 @@ class ChatService:
         blocks = []
         for source in sources:
             if source.kind == "chunk":
-                where = f' ({source.structure_path})' if source.structure_path else ""
+                where = f" ({source.structure_path})" if source.structure_path else ""
                 header = f'[{source.number}] Excerpt from "{source.title}"{where}:'
             else:
                 header = f"[{source.number}] Knowledge object: {source.title}"

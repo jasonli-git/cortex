@@ -31,9 +31,7 @@ def search(
     ko_ids: set[str] | None = None
     if workspace_id is not None:
         resources = set(engine.workspace_object_ids(workspace_id, WorkspaceRefType.RESOURCE))
-        kos = set(
-            engine.workspace_object_ids(workspace_id, WorkspaceRefType.KNOWLEDGE_OBJECT)
-        )
+        kos = set(engine.workspace_object_ids(workspace_id, WorkspaceRefType.KNOWLEDGE_OBJECT))
         for resource_id in resources:
             kos.update(engine.knowledge_object_ids_for_resource(resource_id))
         if resources or kos:
