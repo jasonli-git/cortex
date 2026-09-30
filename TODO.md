@@ -105,7 +105,8 @@ publication gate and the evaluation's metric.
       Pipeline page, not the raw exception string stored in `jobs.error`
 - [ ] Config reduced to the settings a user actually changes; the rest become constants
 - Note: the resource `relationship` value `active_learning` predates SPEC v2.0's
-  "active use" wording; renaming it (migration + frontend type) is optional — M14
+  "active use" wording; renaming it (migration + frontend type) is optional (noted
+  during M14)
 - [ ] Duplicated logic consolidated (audit extraction/chat/search for repeated helpers)
 - [ ] Provenance integrity check: every citation and knowledge object resolves to an
       existing chunk after reprocessing and merges
