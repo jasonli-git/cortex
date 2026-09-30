@@ -2,6 +2,25 @@
 
 All notable changes to Cortex. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+- **Milestone 14** — cleanup: GitHub Actions CI running backend ruff lint, format
+  check, and pytest (98 tests), plus frontend oxlint and build, on pushes to `main`
+  and on pull requests.
+
+### Changed
+- SPEC v2.0 (2026-09-30): Cortex rescoped from interactive learning to a finished,
+  low-cost knowledge system with a document-assistant demonstration; ROADMAP drops
+  M10–M13 and plans M14–M20.
+- Backend reformatted to the configured line length (no behavior change).
+
+### Removed
+- Learning-evidence groundwork from Milestone 9: the `learning_events` table
+  (dropped by migration `0007_drop_learning.sql`), `engine.record_learning_event` /
+  `list_learning_events`, and the recorder calls at upload, note creation, and chat.
+  Nothing read these rows; the learning model they fed is out of scope.
+
 ## [0.1.0] — V1 complete
 
 ### Added

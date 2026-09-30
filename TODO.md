@@ -4,22 +4,10 @@ Open work only. Shipped detail lives in [CHANGELOG.md](CHANGELOG.md), decisions 
 limitations in [ARCHITECTURE.md](ARCHITECTURE.md), milestone status in
 [ROADMAP.md](ROADMAP.md).
 
-## Now — M14 Cleanup, as of 2026-09-30
+## Now — M14 in review, as of 2026-09-30
 
-Roadmap rescoped 2026-09-30: V1.5 (tutoring) dropped, V2 (cost, reliability, polish)
-planned. Nothing started on M14 yet; begin on a `milestone/m14-cleanup` branch.
-
-- [ ] Migration 0007 drops `learning_events`; `LearningEvent` model, repository,
-      `engine.record_learning_event` / `list_learning_events` removed
-- [ ] Recorder call sites removed from `pks/ingestion/intake.py` and
-      `pks/chat/service.py`
-- [ ] Learning-event tests removed from `test_hardening.py`; full suite passing
-- Note: the resource `relationship` field (`active_learning | reference`) is not
-  learning-event code — SPEC v2.0 keeps "active use vs. passive reference". Kept;
-  renaming `active_learning` is optional and belongs in M17 config cleanup
-- [ ] ARCHITECTURE decision row 10 superseded: learning analytics dropped, with pointer
-      to the archived V1.5 plan
-- [ ] CI workflow running `uv run pytest` and the frontend lint/build
+M14 (cleanup) is complete on `milestone/m14-cleanup` and awaiting review and merge.
+Next is M15; don't start it until M14 is merged.
 
 ## Open
 
@@ -116,6 +104,8 @@ publication gate and the evaluation's metric.
 - [ ] Provider and pipeline failures show a user-readable reason on the resource and
       Pipeline page, not the raw exception string stored in `jobs.error`
 - [ ] Config reduced to the settings a user actually changes; the rest become constants
+- Note: the resource `relationship` value `active_learning` predates SPEC v2.0's
+  "active use" wording; renaming it (migration + frontend type) is optional — M14
 - [ ] Duplicated logic consolidated (audit extraction/chat/search for repeated helpers)
 - [ ] Provenance integrity check: every citation and knowledge object resolves to an
       existing chunk after reprocessing and merges

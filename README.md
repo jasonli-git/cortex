@@ -84,11 +84,13 @@ npm run dev
 ```
 
 Data lives in `backend/data/` (SQLite database + original files). Tests:
-`cd backend && uv run pytest`.
+`cd backend && uv run pytest`. CI runs the backend lint, format check, and tests, plus
+the frontend lint and build, on every push to `main` and every pull request.
 
 ## Project Status
 
 V1 complete — all nine milestones (scaffolding → core knowledge engine →
 pipeline → AI extraction → search → dedup/graph → chat → workspaces →
-frontend → hardening). See [ROADMAP.md](ROADMAP.md) and
-[CHANGELOG.md](CHANGELOG.md).
+frontend → hardening). V2 is finishing work: lower cost with model quality held,
+verified citations, a document-assistant demo, reliability, and UI polish. See
+[ROADMAP.md](ROADMAP.md) and [CHANGELOG.md](CHANGELOG.md).

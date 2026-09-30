@@ -31,6 +31,8 @@ repository interfaces and all AI calls sit behind provider interfaces.
 | 8 | Knowledge-object versioning = revision history | Every mutation snapshots the prior state (`ko_versions`). No branching. |
 | 9 | V1 ingestion formats: PDF (text-based), Markdown, plaintext, in-app notes | Spec non-goal: "not every file type". EPUB / web / DOCX / OCR are future parser modules. |
 | 10 | Learning analytics: schema groundwork only | Spec: evidence-based confidence model "not required for Version 1". |
+| 11 | Learning-evidence groundwork removed (M14, 2026-09-30). **Supersedes #10.** | SPEC v2.0 dropped the learning model and the V1.5 practice direction (full plan: `git show 702bc09:ROADMAP.md`); `learning_events` was written at intake and chat but never read. Migration `0007_drop_learning.sql` drops the table; `0006` stays so existing databases migrate in order. Rejected: keeping the table as an activity log for M15's unanswered-question report — that report needs answer outcomes, which these rows never held, so it gets its own table. The resource `relationship` field (`active_learning`/`reference`) is unaffected: SPEC v2.0 keeps active use vs. passive reference. |
+| 12 | CI on GitHub Actions: backend ruff lint + format check + pytest; frontend oxlint + build (M14) | Tests had only ever run locally. Formatting is enforced, so the backend was reformatted once to the configured line length. Costs: `uv sync` pulls sentence-transformers' torch dependency on a cold cache; the uv cache keyed on `uv.lock` amortizes it. |
 
 ## Module Layout
 
@@ -131,13 +133,6 @@ job queue is observable at `GET /api/jobs`.
 One known behavior: an ambiguous entity ("Rome" the city vs. the state) can be typed
 differently across runs, producing same-name siblings of different types. The dedup
 stage deliberately never merges across types; reconciling these is post-V1 work.
-
-## Learning evidence (groundwork)
-
-Per the spec's Learning Philosophy, V1 only *accumulates evidence*: `learning_events`
-records resource ingests, notes written, and questions asked (via
-`engine.record_learning_event`). The confidence model that interprets this evidence
-is future work.
 
 ## Search
 
