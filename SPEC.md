@@ -1,5 +1,5 @@
 # Cortex Specifications
-## Product Specification v1.0
+## Product Specification v2.0 (2026-09-30)
 
 ### Vision
 
@@ -12,6 +12,14 @@ The system should transform unstructured information—including documents, book
 Cortex should prioritize long-term knowledge accumulation rather than short-term question answering.
 
 The application should be designed as a platform rather than a single-purpose application, allowing future AI assistants and modules to build upon the same knowledge layer without requiring architectural changes.
+
+For the current version, Cortex should be **a small, polished personal knowledge system that is pleasant to explore and inexpensive to use.** Its core workflow is:
+
+```
+Material → ingestion → structured knowledge → search / graph exploration → grounded AI interaction
+```
+
+Existing capabilities should be improved rather than substantially expanded. New features should only be added when they materially improve the existing experience without significantly increasing operating cost or architectural complexity.
 
 ---
 
@@ -118,13 +126,28 @@ Examples include:
 * ingestion
 * embeddings
 * search
-* OCR
 * graph generation
 * summarization
-* learning analytics
 * future assistants
 
 Modules should communicate through stable interfaces and should be replaceable without affecting the rest of the application.
+
+#### 10. Cost should be low without lowering quality.
+
+Cortex should be cheap enough for occasional personal use, and its processing costs should be predictable.
+
+Cost should be reduced by doing less work, not by doing worse work:
+
+* avoid unnecessary model calls
+* never reprocess unchanged material
+* cache reusable outputs and stable prompt content
+* batch extraction and processing when possible
+* keep prompts and retrieved context small
+* keep embeddings and deterministic processing local where they provide value without recurring cost
+
+Model choice should follow measured output quality. A stage should not move to a weaker model to save money unless its output quality is shown to hold.
+
+Approximate processing costs should be visible to the user.
 
 ---
 
@@ -139,12 +162,11 @@ The primary interactions should be:
 * search knowledge
 * chat with accumulated knowledge
 * browse relationships
-* review learning
 * manage workspaces
 
 Users should never feel required to manually organize every piece of information.
 
-Instead, the application should continuously perform background processing to maintain an organized knowledge base.
+Instead, the application should perform background processing on the material the user adds to maintain an organized knowledge base.
 
 For example, uploading an American History textbook should not simply create embeddings.
 
@@ -162,7 +184,7 @@ These should become structured knowledge objects linked throughout the rest of t
 
 ___
 
-The application should support both active learning and passive reference.
+The application should support both active use and passive reference.
 
 Examples:
 
@@ -220,26 +242,13 @@ The primary value proposition is knowledge accumulation rather than document ret
 
 ---
 
-### Learning Philosophy
+### Grounding and Provenance
 
-The application should avoid claiming to know what a user understands.
+Answers that depend on the user's material should clearly reference that material.
 
-Instead, it should estimate evidence of learning.
+Every AI-generated claim drawn from Cortex should link back to the specific source passage it came from, and that link should survive reprocessing and de-duplication.
 
-Evidence may include:
-
-* resources read
-* notes written
-* questions asked
-* concepts revisited
-* conversations
-* highlights
-* projects completed
-* future quizzes or exercises
-
-Understanding should therefore be represented as confidence rather than certainty.
-
-This model should remain extensible and should not be required for Version 1.
+Cortex does not model what a user understands. Tutoring, quizzes, mastery scoring, and learner models are out of scope (see Non-Goals).
 
 ---
 
@@ -340,10 +349,11 @@ Examples include:
 * AI Research Assistant
 * AI Coding Assistant
 * Agentic Job Search Assistant
-* Learning Coach
 * Decision Support Assistant
 
 Each assistant should reuse the same knowledge base rather than maintaining separate memories.
+
+This direction is not part of the current version. It constrains the architecture (the knowledge layer stays reusable) without adding scope.
 
 ---
 
@@ -360,9 +370,69 @@ Version 1 should not attempt to:
 
 Instead, Version 1 should focus on building a robust, modular knowledge foundation that can be expanded over time.
 
+### Non-Goals (Version 2)
+
+Version 2 should not attempt to add:
+
+* tutoring modes
+* quizzes or explain-back workflows
+* mastery or confidence scoring
+* learner models or prerequisite tracking
+* spaced repetition
+* automated study plans
+* additional document formats solely for feature breadth
+* continuous or autonomous ingestion
+* expensive always-on AI functionality
+
+These may remain in archived plans or documentation but should not drive development.
+
 ---
 
-### Changes from Previous Draft
+### Completion Criteria
+
+Cortex is complete when:
+
+* the primary UI feels polished and visually consistent
+* ingestion works reliably for the supported formats
+* search and graph exploration are intuitive
+* grounded AI responses clearly reference their source material
+* unnecessary model calls have been removed or reduced
+* processing costs are predictable and reasonable for occasional personal use
+* obsolete roadmap functionality has been removed or explicitly archived
+* documentation accurately reflects the final product
+* the project can be demonstrated end-to-end without significant ongoing maintenance
+
+---
+
+### Changes in v2.0 (2026-09-30)
+
+#### 1. Rescoped from expansion to completion
+
+**Previous idea:** Cortex would grow into interactive learning — a practice partner with quizzes, explain-back, and misconception detection.
+
+**Current version:** Cortex stays a personal knowledge system. The priority is polish, cost, and reliability of the existing workflow.
+
+**Reason:** A finished, pleasant, inexpensive system is a better outcome than a broader unfinished one.
+
+#### 2. Removed the Learning Philosophy
+
+The evidence-based learning model, "review learning" as a primary interaction, learning analytics as a module, and the Learning Coach assistant are removed. A Grounding and Provenance section replaces the Learning Philosophy.
+
+**Reason:** Education features are out of scope; the groundwork built for them is obsolete.
+
+#### 3. Added cost as a core principle
+
+Principle 10 makes low, predictable cost a requirement — achieved by doing less work, not by using weaker models.
+
+**Reason:** Occasional personal use must be affordable, and a cheaper but worse Cortex defeats the purpose.
+
+#### 4. Added Version 2 non-goals and completion criteria
+
+**Reason:** A defined finish line keeps the remaining work bounded.
+
+---
+
+### Changes from Previous Draft (v1.0)
 
 #### 1. Shifted from “Project-centric” to “Knowledge-centric”
 

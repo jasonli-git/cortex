@@ -1,173 +1,94 @@
 # Cortex — TODO
 
-Working list for the current milestone. Longer-horizon items live in [ROADMAP.md](ROADMAP.md).
+Open work only. Shipped detail lives in [CHANGELOG.md](CHANGELOG.md), decisions and
+limitations in [ARCHITECTURE.md](ARCHITECTURE.md), milestone status in
+[ROADMAP.md](ROADMAP.md).
 
-## Milestone 0 — Scaffolding
+## Now — M14 Cleanup, as of 2026-09-30
 
-- [x] Install tooling (uv)
-- [x] Project docs: SPEC.md, ARCHITECTURE.md, ROADMAP.md, TODO.md, CHANGELOG.md
-- [x] Backend scaffold: pyproject (uv), ruff + pytest config
-- [x] `pks` package skeleton with config loading
-- [x] FastAPI app factory + `/api/health` endpoint
-- [x] Smoke tests passing (`uv run pytest`)
-- [x] Update .gitignore for Python/Node artifacts
+Roadmap rescoped 2026-09-30: V1.5 (tutoring) dropped, V2 (cost, reliability, polish)
+planned. Nothing started on M14 yet; begin on a `milestone/m14-cleanup` branch.
 
-## Milestone 1 — Core Knowledge Engine
+- [ ] Migration 0007 drops `learning_events`; `LearningEvent` model, repository,
+      `engine.record_learning_event` / `list_learning_events` removed
+- [ ] Recorder call sites removed from `pks/ingestion/intake.py` and
+      `pks/chat/service.py`
+- [ ] Learning-event tests removed from `test_hardening.py`; full suite passing
+- Note: the resource `relationship` field (`active_learning | reference`) is not
+  learning-event code — SPEC v2.0 keeps "active use vs. passive reference". Kept;
+  renaming `active_learning` is optional and belongs in M17 config cleanup
+- [ ] ARCHITECTURE decision row 10 superseded: learning analytics dropped, with pointer
+      to the archived V1.5 plan
+- [ ] CI workflow running `uv run pytest` and the frontend lint/build
 
-- [x] Schema + migrations for core tables
-- [x] Repository interfaces + SQLite implementations
-- [x] Engine API: knowledge object / relationship / provenance CRUD, versioning
-- [x] Unit tests for engine behavior
+## Open
 
-## Milestone 2 — Event system + resource intake
+### M15 — Cost visibility
 
-- [x] Durable job queue (jobs table + migration) and worker thread
-- [x] Event bus with pipeline-stage subscription
-- [x] Resource upload API (file + note), on-disk resource store
-- [x] Parsers: PDF, Markdown, plaintext
-- [x] Structure-aware chunking (no AI yet)
-- [x] Pipeline status visible via API
+- [ ] Provider returns token usage (input, output, cache read, cache write) alongside
+      every result; `AnthropicProvider` reads it from `response.usage`
+- [ ] Usage persisted per call with stage, resource, conversation/message, model, and
+      tier (new migration)
+- [ ] Per-model price table in config; estimated USD computed at read time, not stored
+- [ ] Cost per resource and per pipeline stage on the Pipeline page and resource
+      detail; cost per chat message available in the API
+- [ ] Reference corpus (3–5 representative documents + a fixed chat question set)
+      committed or documented, with baseline cost and quality recorded
+- [ ] Model candidate evaluation on the reference corpus, per tier: current
+      `claude-opus-4-8` (heavy) and `claude-haiku-4-5` (fast) vs. newer Opus models and
+      other candidates; pick per-stage models on quality first, cost second. The
+      winners become the baseline M16 is measured against
 
-## Milestone 3 — AI extraction
+### M16 — Cost reduction, quality held
 
-- [x] CompletionProvider abstraction + Anthropic implementation
-- [x] Structured-output extraction stages: summaries, entities/concepts/events, relations
-- [x] Extraction writes knowledge objects with provenance via the engine
-- [x] ANTHROPIC_API_KEY configured in backend/.env (gitignored); verified live
-- Note: LLM structure *refinement* (improving "Page N" paths on outline-less PDFs)
-  deferred — parsers already provide native structure; revisit in Milestone 9
+- [ ] Prompt caching on the stable prefix of every call (system prompt + JSON schema)
+      for extraction, summary, dedup, and chat
+- [ ] Summary derived in the extraction pass, so the full document text is sent to the
+      heavy model once instead of twice (today `extract_batch` and `summarize` each
+      read every chunk)
+- [ ] Extraction cache keyed by chunk text hash + prompt version + model: reprocessing
+      an unchanged chunk reuses its prior result instead of calling the model
+- [ ] Dedup confirmations batched: several candidate pairs judged in one heavy-tier
+      call instead of one call per pair (`pks/graph/dedup.py`)
+- [ ] Opt-in "economy" ingestion via the Message Batches API for bulk uploads, with the
+      Pipeline page showing the batch as pending
+- [ ] Prompt and output-schema trimming; chat retrieval breadth
+      (`chat_context_chunks`, `chat_context_objects`, `chat_history_limit`) tuned
+      against the reference question set
+- [ ] Before/after report on the reference corpus: cost delta and quality check (M16
+      success gate in ROADMAP)
+- Note: fast-tier (Haiku) chat grounding is imperfect — a cited claim can still misread
+  its source. The M15 model evaluation must score chat candidates on citation
+  faithfulness, not just answer quality.
 
-## Milestone 4 — Embeddings + hybrid search
+### M17 — Reliability
 
-- [x] EmbeddingProvider abstraction + local sentence-transformers implementation
-- [x] Vector index (float32 BLOB + numpy; sqlite-vec deferred — see ARCHITECTURE #3)
-- [x] FTS5 keyword index over chunks and knowledge objects
-- [x] Hybrid search service (RRF fusion) + API endpoint
+- [ ] Retry backoff for pipeline jobs (currently immediate retries)
+- [ ] Provider and pipeline failures show a user-readable reason on the resource and
+      Pipeline page, not the raw exception string stored in `jobs.error`
+- [ ] Config reduced to the settings a user actually changes; the rest become constants
+- [ ] Duplicated logic consolidated (audit extraction/chat/search for repeated helpers)
+- [ ] Provenance integrity check: every citation and knowledge object resolves to an
+      existing chunk after reprocessing and merges
 
-## Milestone 5 — Relationships + dedup + graph API
+### M18 — UI polish
 
-- [x] Embedding-based duplicate detection with LLM-confirmed merge (dedupe stage)
-- [x] Engine merge operation (relationships/provenance/aliases transfer, history kept)
-- [x] Relationship resolver falls back to the whole knowledge base (cross-resource links)
-- [x] Graph traversal API: /api/knowledge/graph and /api/knowledge/{id}/graph
+- [ ] Navigation and information hierarchy reworked around Library, Search, Graph, Chat;
+      Workspaces and Pipeline reachable but secondary
+- [ ] One consistent type scale, spacing, and palette across pages; intentional dark mode
+- [ ] Empty, loading, error, and processing states on every page
+- [ ] Graph readability: labels, type filtering, neighborhood focus, sane layout on
+      small and large graphs
+- [ ] Chat citations visually tied to source passages; Cortex vs. model segments clear
+- [ ] Responsive down to tablet width where practical
 
-## Milestone 6 — Chat with provenance
+### M19 — Completion
 
-- [x] RAG chat service on the fast tier using hybrid search retrieval
-- [x] Per-segment source labels: Cortex (validated citations) vs. model knowledge
-- [x] Conversations/messages persistence (migration 0004) + API
-- [x] Conversation context window management (recent turns)
-- Note: fast-tier (Haiku) grounding is imperfect — a cited claim can still misread
-  its source. Citations make this checkable; consider a heavy-tier chat option or
-  a verification pass post-V1.
-
-## Milestone 7 — Workspaces + notes
-
-- [x] Workspaces table (migration 0005) + engine/API CRUD
-- [x] Workspace refs: attach/detach resources, knowledge objects, conversations
-- [x] Upload/note endpoints accept workspace_id (ingest straight into a workspace)
-- [x] Workspace scoping for chat retrieval and /api/search
-
-## Milestone 8 — Frontend
-
-- [x] Vite + React + TypeScript + Tailwind scaffold (Node installed via brew)
-- [x] Library: resources, upload with pipeline progress, notes, chunk viewer
-- [x] Search page (knowledge + passages)
-- [x] Knowledge detail with provenance, relationships, history
-- [x] Graph view (cytoscape, click-through to detail)
-- [x] Chat with Cortex/model segment labels + citations; workspace selector
-- [x] Workspaces management (create/delete, contents, detach)
-- Nits for M9: upload-into-workspace from the Library UI; graph layout spreads
-  small graphs tightly (cose params); TYPE_COLORS export triggers a fast-refresh
-  lint warning
-
-## Milestone 9 — Hardening
-
-- [x] Resource reprocessing with stable knowledge/provenance
-- [x] Pipeline observability (GET /api/jobs + Pipeline page)
-- [x] Learning-evidence groundwork (migration 0006 + recorder, wired at intake/chat)
-- [x] Docs polish (README, ARCHITECTURE)
-- [x] Frontend nits from M8 (workspace-targeted upload, graph layout, lint)
-
-## Milestone 10 — Practice loop  ← current
-
-Thesis, scope rationale, and design constraints: [ROADMAP.md](ROADMAP.md) "V1.5 —
-Practice & Diagnosis".
-
-### Schema (migration 0007)
-
-- [ ] `practice_sessions` — conversation / workspace / resource refs, mode
-      (quiz | explain), focus concept, started_at, ended_at
-- [ ] `practice_attempts` — the corpus M12 depends on. One row per graded exchange:
-      session, knowledge object, mode, the **question asked**, the learner's
-      **full answer text** (not a boolean), the verdict, and the
-      `evidence_chunk_id` it was graded against
-- [ ] Domain models + repositories + engine API, mirroring existing
-      provenance/versioning patterns
-- [ ] Leave `learning_events` (0006) alone — it stays the *activity* log
-- [ ] No `understanding_state` table. Confidence modelling is explicitly out of scope
-
-### Practice service (`pks/tutor/`)
-
-- [ ] Module composes ChatService + KnowledgeEngine + SearchService (dependency
-      rule: modules import `core.engine`, never each other)
-- [ ] **Quiz** — question drawn from a specific chunk; verdict graded against that
-      same chunk; stores question, answer, verdict, evidence chunk
-- [ ] **Explain back** — learner explains a concept; graded on a short rubric
-      (accuracy / completeness / own words) naming the missing piece with a
-      citation. Must refuse a fluent wrong answer
-- [ ] No "teach me" mode — cut deliberately, see ROADMAP
-- [ ] Extend `CHAT_SCHEMA` with an `assessment` block; keep the existing
-      segment/citation contract so unbacked `pks` segments still downgrade to `model`
-
-### Model tier
-
-- [ ] `fast_model` → `claude-sonnet-5` (rationale: M6 note above). Heavy tier unchanged
-- [ ] Confirm no regressions in existing chat after the tier change
-
-### Frontend (minimal — real UI work is M11)
-
-- [ ] Practice view: mode switcher, focus-concept selector, session transcript
-- [ ] Verdict rendered inline with the passage it was graded against
-
-### Chore
-
-- [ ] CI workflow running `uv run pytest` (99 tests currently unproven publicly)
-
-### Success gate
-
-- [ ] Two weeks of the author's own use, **with ChatGPT + the same textbook as the
-      control condition**. Measure 7-day retention and adherence (did returning
-      require force?)
-- [ ] Confirm enough real error data accumulated to attempt M12's clustering
-
-## Milestone 11 — UI revamp
-
-- [ ] Reading-first typography; material centered rather than sidebarred
-- [ ] One deliberate typeface pairing and palette; intentional dark mode
-- [ ] Task-organized navigation (study first; graph, pipeline, history reachable
-      but not competing for primary attention)
-- [ ] Target: the screenshot reads as a study tool with no caption
-
-Kept as first-class pages per user decision: **Workspaces** (name unchanged) and
-**Pipeline observability**.
-
-## Milestone 12 — Misconception detection  (gated on M10)
-
-- [ ] Embed `practice_attempts` answer text into the existing vector index
-- [ ] Cluster attempts into candidate misconceptions across unrelated topics
-- [ ] Surface a pattern only with the specific supporting instances; below
-      threshold, show nothing
-- [ ] No mastery percentages anywhere in the UI
-
-## Milestone 13 — Material coverage
-
-- [ ] EPUB parser
-- [ ] OCR for scanned PDFs
-
-Longer-horizon, declined, and parked items: [ROADMAP.md](ROADMAP.md).
+- [ ] Scripted end-to-end demo: upload → pipeline → search → graph → grounded chat
+- [ ] Screenshots refreshed in `screenshots/`
+- [ ] README, ARCHITECTURE, and supported-formats/AI-pipeline docs match the final code
 
 ## Parked / needs user input
 
-- Anthropic API key required before Milestone 3 (`ANTHROPIC_API_KEY`)
-- Node.js required before Milestone 8 (frontend scaffold)
+- **Model candidates for M15.** Newer Opus models are confirmed candidates; the rest of
+  the candidate list (other tiers, other providers) is still to be decided.
