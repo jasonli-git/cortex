@@ -256,6 +256,8 @@ Answers that depend on the user's material should clearly reference that materia
 
 Every AI-generated claim drawn from Cortex should link back to the specific source passage it came from, and that link should survive reprocessing and de-duplication.
 
+Citations should be verified deterministically rather than by another model: a cited statement must carry a verbatim quote that is found in its source passage, and every figure it states — numbers, amounts, durations, dates — must appear in that passage. A statement that cannot be verified is never presented as coming from the documents.
+
 When a document is replaced by a newer version, answers should come from the current version, and cited sources should show which version and effective date they came from. Answers given against an older version should be identifiable as such.
 
 Questions the documents could not answer should be recorded and grouped, so the owner of the documents can see which repeated questions still need a written answer.

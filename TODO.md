@@ -48,6 +48,38 @@ planned. Nothing started on M14 yet; begin on a `milestone/m14-cleanup` branch.
       other candidates; pick per-stage models on quality first, cost second. The
       winners become the baseline M16 is measured against
 
+### M20 — Citation binding (runs after M15, before M16)
+
+Model: housing-intelligence's binding (`hip.packets.citations`, decisions #112, #114,
+#116, #263, #266). One deterministic checker — never a language model — is both the
+publication gate and the evaluation's metric.
+
+- [ ] `CHAT_SCHEMA` segments gain a `quote` (verbatim, ≤ 25 words) from the cited source
+      for every `pks` segment
+- [ ] Sources rendered to the model and sources bound against are the same text (today
+      the prompt gets the first 1,200 chars of a chunk but the citation names all of it)
+- [ ] `pks/chat/binding.py`: locate each quote in its cited passage — exact, then
+      normalized (whitespace, curly quotes, dashes, hyphenation); record segment → chunk,
+      resource, resource version, character span, match method
+- [ ] Figure binding: every number, amount, duration, percentage, and date in a `pks`
+      segment must appear in its bound passage; whole-token matching, years exact
+- [ ] Unbound segment handling: personal mode downgrades to `model`; documents-only
+      mode (M17) sends one revision call quoting the refusal reasons, then refuses with
+      the contact pointer
+- [ ] Bindings persisted on the message with `BINDING_VERSION`; bumping it re-binds
+      stored answers for free
+- [ ] Re-binding on document change: stored answers are re-bound against the new
+      version by quote search; answers whose quotes no longer exist are marked as citing
+      a superseded version (feeds M17's flag)
+- [ ] Extraction provenance quotes verified against their chunk at ingest; unverifiable
+      quotes are dropped or flagged, not stored as evidence
+- [ ] Evaluation runner reports bound rate per model alongside the model-graded claim
+      support score
+- [ ] UI: citation click opens the passage with the bound span highlighted
+- Note: binding checks quotes and figures, not claims — a correct quote under a wrong
+  paraphrase passes. Claim support stays a model-graded evaluation score, not a gate
+  (same line housing drew in #112). Record in ARCHITECTURE when M20 ships.
+
 ### M16 — Cost reduction, quality held
 
 - [ ] Prompt caching on the stable prefix of every call (system prompt + JSON schema)
