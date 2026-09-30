@@ -1,4 +1,4 @@
-"""Tests for Milestone 9: reprocessing, jobs view, learning events."""
+"""Tests for Milestone 9: reprocessing and the jobs view."""
 
 import time
 
@@ -6,13 +6,9 @@ import pytest
 from fastapi.testclient import TestClient
 
 from pks.api.app import create_app
-from pks.chat.service import ChatService
 from pks.config import Settings
 from pks.core import KnowledgeEngine
 from pks.core.store import SqliteStore
-from pks.events import JobQueue, Worker
-from pks.ingestion import intake
-from pks.pipeline import build_pipeline
 from tests.fakes import ROME_MD, FakeEmbedder, FakeProvider
 
 
@@ -112,35 +108,3 @@ def test_jobs_endpoint_reports_counts_and_recent_jobs(client):
 
     failed_only = client.get("/api/jobs", params={"status": "failed"}).json()
     assert failed_only["jobs"] == []
-
-
-# ----------------------------------------------------------------------
-# Learning events
-# ----------------------------------------------------------------------
-
-
-def test_learning_events_accumulate(settings, tmp_path):
-    store = SqliteStore(settings.db_path)
-    engine = KnowledgeEngine(store)
-    embedder = FakeEmbedder()
-    registry = build_pipeline(FakeProvider(), embedder)
-    queue = JobQueue(store)
-
-    intake.save_upload(
-        engine, settings, registry, queue, filename="rome.md", content=ROME_MD
-    )
-    intake.create_note(engine, settings, registry, queue, title="Note", content="# N\n\nBody")
-    Worker(settings, registry).drain()
-
-    chat = ChatService(store, FakeProvider(), embedder, settings)
-    chat.ask("When did the Republic begin?")
-
-    kinds = [e.kind.value for e in engine.list_learning_events()]
-    assert kinds.count("resource_ingested") == 1
-    assert kinds.count("note_written") == 1
-    assert kinds.count("question_asked") == 1
-
-    questions = engine.list_learning_events(kind="question_asked")
-    assert questions[0].detail["question"] == "When did the Republic begin?"
-    assert questions[0].subject_type == "conversation"
-    store.close()

@@ -13,8 +13,6 @@ from pks.core.models import (
     KnowledgeObject,
     KnowledgeObjectType,
     KnowledgeObjectVersion,
-    LearningEvent,
-    LearningEventKind,
     Provenance,
     Relationship,
     Resource,
@@ -412,36 +410,6 @@ class KnowledgeEngine:
     def knowledge_object_ids_for_resource(self, resource_id: str) -> list[str]:
         """Ids of knowledge objects that have evidence in the given resource."""
         return self._store.provenance.knowledge_object_ids_for_resource(resource_id)
-
-    # ------------------------------------------------------------------
-    # Learning evidence (recorded now, interpreted post-V1)
-    # ------------------------------------------------------------------
-
-    def record_learning_event(
-        self,
-        kind: LearningEventKind | str,
-        *,
-        subject_type: str | None = None,
-        subject_id: str | None = None,
-        detail: dict | None = None,
-    ) -> LearningEvent:
-        event = LearningEvent(
-            id=_new_id(),
-            kind=LearningEventKind(kind),
-            subject_type=subject_type,
-            subject_id=subject_id,
-            detail=detail or {},
-            created_at=utcnow(),
-        )
-        with self._store.transaction():
-            self._store.learning_events.insert(event)
-        return event
-
-    def list_learning_events(
-        self, *, kind: LearningEventKind | str | None = None, limit: int = 100
-    ) -> list[LearningEvent]:
-        event_kind = LearningEventKind(kind) if kind is not None else None
-        return self._store.learning_events.list(kind=event_kind, limit=limit)
 
     # ------------------------------------------------------------------
     # Resources (evidence)
