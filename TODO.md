@@ -35,6 +35,11 @@ M14 merged 2026-09-30. M15 is next; not started. Begin on a
       `claude-opus-4-8` (heavy) and `claude-haiku-4-5` (fast) vs. newer Opus models and
       other candidates; pick per-stage models on quality first, cost second. The
       winners become the baseline M16 is measured against
+- [ ] Eligibility filter before scoring: a candidate qualifies only if it is usable
+      under business terms with a BAA available (direct or via Bedrock / Vertex /
+      Azure). The comparison table records, per candidate, BAA availability, training
+      on API data, retention / zero-retention option, and access routes — each
+      checked against the provider's current terms at evaluation time, with the date
 
 ### M20 — Citation binding (runs after M15, before M16)
 
@@ -115,6 +120,10 @@ publication gate and the evaluation's metric.
 
 - [ ] Standalone assistant page: one question box, cited answers, citation click opens
       the source passage; no library/graph/pipeline chrome. The primary demo surface
+- [ ] Privacy notice on the assistant page ("Don't enter client information")
+- [ ] Optional pre-send check: flag likely personal data in a question (names with
+      dates of birth, phone numbers, emails, record numbers) and ask before sending —
+      local pattern matching, no model call
 
 - [ ] Navigation and information hierarchy reworked around Library, Search, Graph, Chat;
       Workspaces and Pipeline reachable but secondary
@@ -127,6 +136,11 @@ publication gate and the evaluation's metric.
 
 ### M19 — Completion
 
+- [ ] ARCHITECTURE "Deployment and privacy" section: what is sent to the provider
+      (retrieved passages + question + recent history), what stays local (originals,
+      embeddings, database), and what a real deployment needs (BAA, zero retention,
+      provider via the organization's cloud, local-model option)
+
 - [ ] Scripted end-to-end demo on the fictional clinic handbook: upload → assistant page
       answers with citations → an unanswered question → gap report → policy re-upload
       changes the answer
@@ -137,4 +151,5 @@ publication gate and the evaluation's metric.
 ## Parked / needs user input
 
 - **Model candidates for M15.** Newer Opus models are confirmed candidates; the rest of
-  the candidate list (other tiers, other providers) is still to be decided.
+  the candidate list (other tiers, other providers) is still to be decided. Only
+  candidates passing the BAA / business-terms filter are scored.

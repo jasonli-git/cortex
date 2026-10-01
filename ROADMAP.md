@@ -43,12 +43,12 @@ between M15 and M16; milestones are not renumbered.
 | M | Status | Deliverable |
 |---|--------|-------------|
 | 14 | ✅ done | **Cleanup** — remove learning-evidence code (`learning_events`, recorder, call sites), archive V1.5 plan in ARCHITECTURE, CI running the test suite |
-| 15 | ⬜ planned | **Cost visibility + evaluation** — per-call token + cost capture (incl. cache reads/writes) per stage, resource, and chat message; fictional-clinic handbook corpus with a scored question set (accuracy, citation faithfulness, correct refusal); unanswered-question log and gap report; model candidate evaluation sets the baseline |
+| 15 | ⬜ planned | **Cost visibility + evaluation** — per-call token + cost capture (incl. cache reads/writes) per stage, resource, and chat message; fictional-clinic handbook corpus with a scored question set (accuracy, citation faithfulness, correct refusal); unanswered-question log and gap report; model candidate evaluation (BAA-eligible providers only) sets the baseline |
 | 20 | ⬜ planned | **Citation binding** — deterministic checker binds each grounded chat segment to a verbatim quote span and every figure in it to its source passage; unbound segments downgraded (personal) or revised once then refused (documents-only); bindings stored with span, chunk, resource version, match method, binder version; same checker is the gate and the evaluation's bound rate; extraction quotes verified at ingest |
 | 16 | ⬜ planned | **Cost reduction, quality held** — prompt caching, single full-text pass for extraction + summary, extraction cache for unchanged chunks on reprocess, batched dedup confirmations, opt-in Message Batches ingestion, trimmed prompts/context; gated on a before/after quality check against the M15 baseline |
 | 17 | ⬜ planned | **Reliability + trustworthy answers** — documents-only answer mode with refusal and contact pointers; document versions with effective dates (re-upload replaces, answers cite current version); retry backoff, readable errors, simplified config, consolidated logic, provenance integrity checks |
-| 18 | ⬜ planned | **UI polish** — standalone assistant page (one question box, cited answers) as the primary surface; navigation and hierarchy, visual consistency, empty/loading/error/processing states, readable graph, responsive layout |
-| 19 | ⬜ planned | **Completion** — end-to-end demo on the fictional clinic handbook, published evaluation results in README, refreshed screenshots, docs reflect the final product |
+| 18 | ⬜ planned | **UI polish** — standalone assistant page (one question box, cited answers, privacy notice, optional personal-data check) as the primary surface; navigation and hierarchy, visual consistency, empty/loading/error/processing states, readable graph, responsive layout |
+| 19 | ⬜ planned | **Completion** — end-to-end demo on the fictional clinic handbook, published evaluation results in README, deployment and privacy section, refreshed screenshots, docs reflect the final product |
 
 ### M16 success gate
 
