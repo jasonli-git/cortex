@@ -16,7 +16,7 @@ The application should be designed as a platform rather than a single-purpose ap
 For the current version, Cortex should be **a small, polished knowledge system that is pleasant to explore and inexpensive to use.** It serves two uses of the same engine:
 
 * **Personal knowledge** — one person's accumulated material, explored through search, the graph, and chat.
-* **Document assistant** — a team's policies, handbooks, and procedures, answered for people who ask the same questions repeatedly (for example, new hires asking onboarding questions that staff would otherwise answer by email).
+* **Document assistant** — a team's policies, handbooks, and procedures, answered for people who ask the same questions repeatedly (for example, employees asking policy questions that staff would otherwise answer by email). The assistant is general-purpose: it is not tailored to any one industry.
 
 The document assistant is the primary demonstration of Cortex. Its core workflow is the same:
 
