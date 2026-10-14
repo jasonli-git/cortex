@@ -143,5 +143,3 @@ publication gate and the evaluation's metric.
 - [ ] Evaluation results published in README
 - [ ] Screenshots refreshed in `screenshots/`
 - [ ] README, ARCHITECTURE, and supported-formats/AI-pipeline docs match the final code
-
-## Parked / needs user input
