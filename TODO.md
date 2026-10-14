@@ -31,10 +31,16 @@ M14 merged 2026-09-30. M15 is next; not started. Begin on a
       a gap report groups similar questions by embedding and counts repeats
 - [ ] Top-asked questions and cost per question visible to the document owner
 - [ ] Baseline cost and question-set scores recorded
-- [ ] Model candidate evaluation on the reference corpus, per tier: current
-      `claude-opus-4-8` (heavy) and `claude-haiku-4-5` (fast) vs. newer Opus models and
-      other candidates; pick per-stage models on quality first, cost second. The
-      winners become the baseline M16 is measured against
+- [ ] OpenAI-compatible provider behind `CompletionProvider` (covers GPT and DeepSeek via
+      base URL) and a Google provider; keys optional, Anthropic stays the default
+- [ ] Model candidate evaluation on the reference corpus. Chat tier: GPT-6 Luna,
+      Claude Haiku 5.5 (medium), Gemini 3.8 Flash (low thinking), DeepSeek V4.1 Flash
+      (cheap baseline), Claude Sonnet 5.5 (quality ceiling); current `claude-haiku-4-5`
+      as reference. Extraction tier: `claude-opus-4-8` vs. Opus 5.5. Selection rule
+      from housing-intelligence: pass the citation check first, then rank on quality
+      (rubric graded by Opus 5.5), then cost. Winners become the M16 baseline
+- Note: results note where organizations commonly restrict a provider (e.g. DeepSeek
+  for internal documents); informational, not a filter
 
 ### M20 — Citation binding (runs after M15, before M16)
 
@@ -139,6 +145,3 @@ publication gate and the evaluation's metric.
 - [ ] README, ARCHITECTURE, and supported-formats/AI-pipeline docs match the final code
 
 ## Parked / needs user input
-
-- **Model candidates for M15.** Newer Opus models are confirmed candidates; the rest of
-  the candidate list (other tiers, other providers) is still to be decided.
